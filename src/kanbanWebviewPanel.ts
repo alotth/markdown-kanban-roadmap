@@ -14,6 +14,9 @@ export class KanbanWebviewPanel {
     private _disposables: vscode.Disposable[] = [];
     private _board?: KanbanBoard;
     private _document?: vscode.TextDocument;
+    private _detailFilePaths: Set<string> = new Set();
+    private _detailWatchers: vscode.FileSystemWatcher[] = [];
+    private _boardWatcher?: vscode.FileSystemWatcher;
 
     public static createOrShow(extensionUri: vscode.Uri, context: vscode.ExtensionContext, document?: vscode.TextDocument) {
         const column = vscode.window.activeTextEditor?.viewColumn;
@@ -123,12 +126,13 @@ export class KanbanWebviewPanel {
     public loadMarkdownFile(document: vscode.TextDocument) {
         this._document = document;
         try {
-            this._board = MarkdownKanbanParser.parseMarkdown(document.getText());
+            this._board = MarkdownKanbanParser.parseMarkdownWithDetails(document.getText(), document.uri.fsPath);
         } catch (error) {
             console.error('Error parsing Markdown:', error);
             vscode.window.showErrorMessage(`Kanban parsing error: ${error instanceof Error ? error.message : String(error)}`);
             this._board = { title: 'Error Loading Board', columns: [] };
         }
+        this._syncWatchers();
         this._update();
     }
 
@@ -162,6 +166,22 @@ export class KanbanWebviewPanel {
         await this._document.save();
     }
 
+    private async saveTaskDetail(task: KanbanTask) {
+        if (!this._document || !task.detailPath) return;
+
+        const detailFilePath = MarkdownKanbanParser.resolveDetailFilePath(task.detailPath, this._document.uri.fsPath);
+        const detailUri = vscode.Uri.file(detailFilePath);
+        const detailDir = vscode.Uri.file(path.dirname(detailFilePath));
+        const detailContent = MarkdownKanbanParser.generateTaskDetailMarkdown(task);
+
+        try {
+            await vscode.workspace.fs.createDirectory(detailDir);
+            await vscode.workspace.fs.writeFile(detailUri, Buffer.from(detailContent, 'utf8'));
+        } catch (error) {
+            vscode.window.showErrorMessage(`failed save detail: ${error}`);
+        }
+    }
+
     private findColumn(columnId: string): KanbanColumn | undefined {
         return this._board?.columns.find(col => col.id === columnId);
     }
@@ -180,10 +200,10 @@ export class KanbanWebviewPanel {
         };
     }
 
-    private async performAction(action: () => void) {
+    private async performAction(action: () => void | Promise<void>) {
         if (!this._board) return;
         
-        action();
+        await action();
         await this.saveToMarkdown();
         this._update();
     }
@@ -251,6 +271,7 @@ export class KanbanWebviewPanel {
                 defaultExpanded: taskData.defaultExpanded,
                 steps: taskData.steps || []
             });
+            return this.saveTaskDetail(result.task);
         });
     }
 
@@ -262,6 +283,7 @@ export class KanbanWebviewPanel {
             }
 
             result.task.steps[stepIndex].completed = completed;
+            return this.saveTaskDetail(result.task);
         });
     }
 
@@ -276,6 +298,7 @@ export class KanbanWebviewPanel {
                 .map(index => originalSteps[index]);
 
             result.task.steps = reorderedSteps;
+            return this.saveTaskDetail(result.task);
         });
     }
 
@@ -332,13 +355,84 @@ export class KanbanWebviewPanel {
         return html;
     }
 
+    public handleDocumentChange(document: vscode.TextDocument) {
+        if (!this._document) return;
+        const documentPath = document.uri.fsPath;
+
+        if (documentPath === this._document.uri.fsPath) {
+            this.loadMarkdownFile(document);
+            return;
+        }
+
+        if (this._detailFilePaths.has(documentPath)) {
+            this.loadMarkdownFile(this._document);
+        }
+    }
+
+    public handleActiveEditorChange(document: vscode.TextDocument) {
+        if (this._detailFilePaths.has(document.uri.fsPath)) {
+            return;
+        }
+        this.loadMarkdownFile(document);
+    }
+
     public dispose() {
         KanbanWebviewPanel.currentPanel = undefined;
         this._panel.dispose();
+        this._disposeWatchers();
 
         while (this._disposables.length) {
             const disposable = this._disposables.pop();
             disposable?.dispose();
         }
+    }
+
+    private _syncWatchers() {
+        this._disposeWatchers();
+
+        this._detailFilePaths.clear();
+        if (!this._document || !this._board) return;
+
+        for (const column of this._board.columns) {
+            for (const task of column.tasks) {
+                if (!task.detailPath) continue;
+                const detailFilePath = MarkdownKanbanParser.resolveDetailFilePath(task.detailPath, this._document.uri.fsPath);
+                this._detailFilePaths.add(detailFilePath);
+            }
+        }
+
+        this._boardWatcher = this._createFileWatcher(this._document.uri);
+
+        for (const detailPath of this._detailFilePaths) {
+            this._detailWatchers.push(this._createFileWatcher(vscode.Uri.file(detailPath)));
+        }
+    }
+
+    private _disposeWatchers() {
+        this._boardWatcher?.dispose();
+        this._boardWatcher = undefined;
+
+        this._detailWatchers.forEach(watcher => watcher.dispose());
+        this._detailWatchers = [];
+    }
+
+    private _createFileWatcher(uri: vscode.Uri): vscode.FileSystemWatcher {
+        const pattern = new vscode.RelativePattern(path.dirname(uri.fsPath), path.basename(uri.fsPath));
+        const watcher = vscode.workspace.createFileSystemWatcher(pattern);
+        const refresh = async () => {
+            if (!this._document) return;
+            if (uri.fsPath === this._document.uri.fsPath) {
+                const document = await vscode.workspace.openTextDocument(this._document.uri);
+                this.loadMarkdownFile(document);
+                return;
+            }
+            this.loadMarkdownFile(this._document);
+        };
+
+        watcher.onDidChange(() => { void refresh(); });
+        watcher.onDidCreate(() => { void refresh(); });
+        watcher.onDidDelete(() => { void refresh(); });
+
+        return watcher;
     }
 }

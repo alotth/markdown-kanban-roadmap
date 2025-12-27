@@ -4,7 +4,13 @@
 A powerful VS Code extension that transforms Markdown files into interactive Kanban boards, supporting task management, drag-and-drop operations, and rich task attributes.
 
 ## ✨ Features
-![alt text](./imgs/image.png)
+
+### Kanban Board View
+![Kanban Board](./imgs/image-kanban.png)
+
+### Roadmap View
+![Roadmap](./imgs/image-roadmap.png)
+
 ### 📋 Basic Features
 - **Markdown Parsing**: Automatically parses task lists from Markdown files.
 - **Kanban View**: Displays tasks in a Kanban board format with multi-column layout.
@@ -26,6 +32,7 @@ Supports a structured task format for better readability and organization:
 - **Structured Attributes**: Task attributes use an indented list format.
 - **Code Block Descriptions**: Use ```` ```md ```` code blocks for detailed descriptions.
 - **Array Tags**: Tags support `[tag1, tag2, tag3]` array format.
+- **Milestone Format**: Suggested format `sprint-year-month_number` (e.g., `sprint-26-1_1` for January 2026, sprint 1).
 - **Backward Compatibility**: Fully compatible with the old inline format.
 
 ### 🔍 Filtering & Sorting
@@ -39,6 +46,31 @@ Supports a structured task format for better readability and organization:
   - Main Panel: Full Kanban editing interface.
 - **Modern UI**: Adheres to VS Code design guidelines and supports theme switching.
 - **Responsive Design**: Adapts to different screen sizes.
+
+## 🧪 Testing Locally
+
+To test the extension locally during development:
+
+1. **Install dependencies:**
+   ```bash
+   npm install
+   ```
+
+2. **Run in debug mode:**
+   - Press `F5` or go to `Run > Start Debugging`
+   - Or use the Command Palette (`Ctrl+Shift+P` / `Cmd+Shift+P`) → "Debug: Start Debugging"
+
+3. **Open the example-tasks folder:**
+   - A new VS Code window will open (Extension Development Host)
+   - Navigate to the `example-tasks` folder and open it
+   - Or select "Open Folder" and choose the `example-tasks` folder from the project
+
+4. **Explore the features:**
+   - Open the `example-tasks/TASKS.md` file
+   - Right-click → "Kanban" or use the Command Palette → "Open Kanban Board"
+   - The window will show all extension features with real examples
+
+> 💡 **Tip**: The `example-tasks` folder contains complete examples of tasks with all supported metadata. See the [example-tasks README](./example-tasks/README.md) to understand the complete task format.
 
 ## 🚀 Quick Start
 
@@ -92,6 +124,9 @@ Supports a structured task format for better readability and organization:
 ```
 
 #### 2. Open Kanban View
+
+![How to Open Kanban](./imgs/image-to-open.png)
+
 - **Method 1**: Right-click on the Markdown file → Select "Kanban"
 - **Method 2**: Use the Command Palette (`Ctrl+Shift+P` or `Cmd+Shift+P`) → Type "Open Kanban Board"
 - **Method 3**: Check the Kanban view in the sidebar.

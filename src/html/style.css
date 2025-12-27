@@ -342,6 +342,12 @@ body.filters-visible {
     flex: 1;
 }
 
+.task-id {
+    color: var(--vscode-descriptionForeground);
+    font-weight: 500;
+    margin-right: 4px;
+}
+
 .archive-task-deadline {
     font-size: 10px;
     margin-bottom: 4px;

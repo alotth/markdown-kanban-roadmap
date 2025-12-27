@@ -2,6 +2,7 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 import { KanbanWebviewPanel } from './kanbanWebviewPanel';
+import { RoadmapWebviewPanel } from './roadmapWebviewPanel';
 
 
 // This method is called when your extension is activated
@@ -17,6 +18,11 @@ export function activate(context: vscode.ExtensionContext) {
 		vscode.window.registerWebviewPanelSerializer(KanbanWebviewPanel.viewType, {
 			async deserializeWebviewPanel(webviewPanel: vscode.WebviewPanel, state: any) {
 				KanbanWebviewPanel.revive(webviewPanel, context.extensionUri, context);
+			}
+		});
+		vscode.window.registerWebviewPanelSerializer(RoadmapWebviewPanel.viewType, {
+			async deserializeWebviewPanel(webviewPanel: vscode.WebviewPanel, state: any) {
+				RoadmapWebviewPanel.revive(webviewPanel, context.extensionUri, context);
 			}
 		});
 	}
@@ -67,6 +73,44 @@ export function activate(context: vscode.ExtensionContext) {
 		}
 	});
 
+	const openRoadmapCommand = vscode.commands.registerCommand('markdown-kanban.openRoadmap', async (uri?: vscode.Uri) => {
+		let targetUri = uri;
+
+		if (!targetUri && vscode.window.activeTextEditor) {
+			targetUri = vscode.window.activeTextEditor.document.uri;
+		}
+
+		if (!targetUri) {
+			const fileUris = await vscode.window.showOpenDialog({
+				canSelectFiles: true,
+				canSelectFolders: false,
+				canSelectMany: false,
+				filters: {
+					'Markdown files': ['md']
+				}
+			});
+
+			if (fileUris && fileUris.length > 0) {
+				targetUri = fileUris[0];
+			} else {
+				return;
+			}
+		}
+
+		if (!targetUri.fsPath.endsWith('.md')) {
+			vscode.window.showErrorMessage('请选择一个markdown文件。');
+			return;
+		}
+
+		try {
+			const document = await vscode.workspace.openTextDocument(targetUri);
+			RoadmapWebviewPanel.createOrShow(context.extensionUri, context, document);
+			vscode.window.showInformationMessage(`load roadmap from: ${document.fileName}`);
+		} catch (error) {
+			vscode.window.showErrorMessage(`failed open roadmap: ${error}`);
+		}
+	});
+
 	const disableFileListenerCommand = vscode.commands.registerCommand('markdown-kanban.disableFileListener', async () => {
 		fileListenerEnabled = !fileListenerEnabled;
 	});
@@ -78,7 +122,10 @@ export function activate(context: vscode.ExtensionContext) {
 			setTimeout(() => {
 				// 更新面板中的看板
 				if (KanbanWebviewPanel.currentPanel) {
-					KanbanWebviewPanel.currentPanel.loadMarkdownFile(event.document);
+					KanbanWebviewPanel.currentPanel.handleDocumentChange(event.document);
+				}
+				if (RoadmapWebviewPanel.currentPanel) {
+					RoadmapWebviewPanel.currentPanel.handleDocumentChange(event.document);
 				}
 			}, 500);
 		}
@@ -90,7 +137,10 @@ export function activate(context: vscode.ExtensionContext) {
 			vscode.commands.executeCommand('setContext', 'markdownKanbanActive', true);
 			// 如果有面板打开，自动加载当前文档
 			if (KanbanWebviewPanel.currentPanel) {
-				KanbanWebviewPanel.currentPanel.loadMarkdownFile(editor.document);
+				KanbanWebviewPanel.currentPanel.handleActiveEditorChange(editor.document);
+			}
+			if (RoadmapWebviewPanel.currentPanel) {
+				RoadmapWebviewPanel.currentPanel.handleActiveEditorChange(editor.document);
 			}
 		} else {
 			vscode.commands.executeCommand('setContext', 'markdownKanbanActive', false);
@@ -100,6 +150,7 @@ export function activate(context: vscode.ExtensionContext) {
 	// 添加到订阅列表
 	context.subscriptions.push(
 		openKanbanCommand,
+		openRoadmapCommand,
 		disableFileListenerCommand,
 		documentChangeListener,
 		activeEditorChangeListener,

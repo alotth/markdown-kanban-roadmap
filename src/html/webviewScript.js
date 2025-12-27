@@ -180,7 +180,7 @@ function createTaskElement (task, columnId) {
              data-column-id="${columnId}">
             <div class="task-header">
                 <div class="task-drag-handle" title="Drag to move task">⋮⋮</div>
-                <div class="task-title">${task.title}</div>
+                <div class="task-title">${formatTaskTitle(task)}</div>
                 <div class="task-meta">
                     ${createStepsProgressElement(stepsProgress)}
                     ${createPriorityElement(task.priority, priorityClass)}
@@ -192,6 +192,13 @@ function createTaskElement (task, columnId) {
             ${createTaskActions(task.id, columnId)}
         </div>
     `
+}
+
+function formatTaskTitle (task) {
+  if (task.id) {
+    return `<span class="task-id">[${task.id}]</span> ${task.title}`
+  }
+  return task.title
 }
 
 function getTaskExpansionState(task) {
@@ -753,7 +760,7 @@ function createArchiveTaskElement(task, columnId) {
   return `
     <div class="archive-task-item" data-task-id="${task.id}" data-column-id="${columnId}">
       <div class="archive-task-header">
-        <span class="archive-task-title">${task.title}</span>
+        <span class="archive-task-title">${formatTaskTitle(task)}</span>
         ${task.priority ? `<span class="task-priority ${priorityClass}" title="Priority: ${getPriorityText(task.priority)}"></span>` : ''}
       </div>
       ${deadlineInfo ? `<div class="archive-task-deadline deadline-${deadlineInfo.status}">${deadlineInfo.text}</div>` : ''}

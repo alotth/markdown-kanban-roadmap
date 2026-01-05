@@ -3,6 +3,21 @@
 
 A powerful VS Code extension that transforms Markdown files into interactive Kanban boards, supporting task management, drag-and-drop operations, and rich task attributes.
 
+## For Cursor Users
+
+If you're using **Cursor IDE**, add the rules to your **User Rules** to enable AI assistants to properly create and manage tasks in the Markdown Kanban format:
+
+1. Open Cursor Settings → **User Rules**
+2. Copy the content from [`rules/.cursorrules`](./rules/.cursorrules)
+3. Paste it into your User Rules
+
+This will ensure AI assistants understand the task format and maintain compatibility with the extension.
+
+**Rules Documentation:**
+- [`.cursorrules`](./rules/.cursorrules) - Rules for Cursor IDE (copy to User Rules)
+- [`AGENTS.md`](./rules/AGENTS.md) - General rules for any AI assistant
+- [`CLAUDE.md`](./rules/CLAUDE.md) - Specific rules for Claude AI
+
 ## ✨ Features
 
 ### Kanban Board View
@@ -34,6 +49,27 @@ Supports a structured task format for better readability and organization:
 - **Array Tags**: Tags support `[tag1, tag2, tag3]` array format.
 - **Milestone Format**: Suggested format `sprint-year-month_number` (e.g., `sprint-26-1_1` for January 2026, sprint 1).
 - **Backward Compatibility**: Fully compatible with the old inline format.
+
+### Rules for AI Assistants
+
+This project includes comprehensive rules and guidelines to help AI assistants properly create and manage tasks in the Markdown Kanban format. These rules ensure compatibility with the extension and maintain consistency across projects.
+
+**Rules Documentation:**
+- [`.cursorrules`](./rules/.cursorrules) - Rules for Cursor IDE (copy to User Rules)
+- [`AGENTS.md`](./rules/AGENTS.md) - General rules for any AI assistant
+- [`CLAUDE.md`](./rules/CLAUDE.md) - Specific rules for Claude AI
+
+These rules cover:
+- Complete task format specification
+- Required and optional task properties
+- Detail file format (`tasks/T-XXX.md`)
+- Status flow and transitions
+- Best practices and common mistakes to avoid
+- Complete examples and reference guides
+
+> **For AI Assistants**: When working with `TASKS.md` files, refer to the rules in `rules/` directory to ensure you create and manage tasks correctly. These rules are designed to help AI assistants understand the proper format and maintain compatibility with the VS Code Markdown Kanban extension.
+
+See the [example-tasks](./example-tasks/) directory for complete working examples of properly formatted tasks.
 
 ### 🔍 Filtering & Sorting
 - **Tag Filtering**: Filter tasks by tags; multiple tags (comma-separated) are supported.
@@ -71,6 +107,57 @@ To test the extension locally during development:
    - The window will show all extension features with real examples
 
 > 💡 **Tip**: The `example-tasks` folder contains complete examples of tasks with all supported metadata. See the [example-tasks README](./example-tasks/README.md) to understand the complete task format.
+
+## 🛠️ Development
+
+### Prerequisites
+
+1. **Node.js** (v18 or higher)
+2. **VS Code Extension Manager (vsce)**
+   ```bash
+   npm install -g @vscode/vsce
+   ```
+
+### Building the Extension
+
+1. **Install dependencies:**
+   ```bash
+   npm install
+   ```
+
+2. **Compile the extension:**
+   ```bash
+   npm run compile
+   ```
+
+3. **Create VSIX package:**
+   ```bash
+   npm run package
+   ```
+   This will:
+   - Run type checking
+   - Run linting
+   - Build the extension for production
+   - Create a `.vsix` file in the project root
+
+4. **Install locally for testing:**
+   ```bash
+   code --install-extension markdown-kanban-roadmap-*.vsix
+   ```
+
+### Available Scripts
+
+- `npm run compile` - Compile TypeScript and build the extension
+- `npm run watch` - Watch mode for development (auto-rebuild on changes)
+- `npm run package` - Create production build and VSIX package
+- `npm run lint` - Run ESLint
+- `npm run check-types` - Type check without emitting files
+- `npm test` - Run tests
+- `npm run test:parser` - Test markdown parser
+
+### Publishing
+
+For publishing instructions, see [PUBLISH.md](./PUBLISH.md).
 
 ## 🚀 Quick Start
 
@@ -127,9 +214,11 @@ To test the extension locally during development:
 
 ![How to Open Kanban](./imgs/image-to-open.png)
 
+You have three ways to open the Kanban board:
+
 - **Method 1**: Right-click on the Markdown file → Select "Kanban"
 - **Method 2**: Use the Command Palette (`Ctrl+Shift+P` or `Cmd+Shift+P`) → Type "Open Kanban Board"
-- **Method 3**: Check the Kanban view in the sidebar.
+- **Method 3**: Click the "Kanban" button in the editor toolbar
 
 #### 3. Use Filtering and Sorting
 - **Tag Filtering**: Enter tag names in the top filter box (e.g., design,ui).

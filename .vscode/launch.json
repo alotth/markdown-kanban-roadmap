@@ -11,11 +11,14 @@
 			"request": "launch",
 			"args": [
 				"--extensionDevelopmentPath=${workspaceFolder}",
-				"--folder-uri=${workspaceFolder}/example-tasks"
+				"${workspaceFolder}/example-tasks"
 			],
 			"outFiles": [
 				"${workspaceFolder}/dist/**/*.js"
-			]
+			],
+			"internalConsoleOptions": "openOnSessionStart",
+			"preLaunchTask": "watch",
+			"sourceMaps": true
 		}
 	]
 }

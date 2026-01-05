@@ -3,15 +3,15 @@
 import * as vscode from 'vscode';
 import { KanbanWebviewPanel } from './kanbanWebviewPanel';
 import { RoadmapWebviewPanel } from './roadmapWebviewPanel';
+import { logger } from './logger';
 
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
 	let fileListenerEnabled = true;
-	// Use the console to output diagnostic information (console.log) and errors (console.error)
-	// This line of code will only be executed once when your extension is activated
-	console.log('Markdown Kanban extension is now active!');
+	// Use the logger to output diagnostic information
+	logger.info('Markdown Kanban extension is now active!', undefined, 'extension.ts:activate');
 
 	// 注册webview panel序列化器（用于恢复面板状态）
 	if (vscode.window.registerWebviewPanelSerializer) {

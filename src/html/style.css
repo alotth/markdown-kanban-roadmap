@@ -525,6 +525,16 @@ body.filters-visible {
     color: white; 
 }
 
+.task-start-date {
+    font-size: 11px;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-weight: 500;
+    background-color: #0d6efd;
+    color: white;
+    margin-left: 4px;
+}
+
 .task-deadline {
     font-size: 11px;
     padding: 2px 6px;
@@ -1193,4 +1203,79 @@ body.filters-visible {
 .task-step-item.drag-insert-after {
     border-bottom: 2px solid var(--vscode-focusBorder);
     margin-bottom: 2px;
+}
+
+/* Debug Panel */
+.debug-panel {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    width: 400px;
+    max-height: 500px;
+    background-color: var(--vscode-editor-background);
+    border: 2px solid var(--vscode-focusBorder);
+    border-radius: 8px;
+    padding: 12px;
+    z-index: 10000;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    font-size: 12px;
+    overflow-y: auto;
+}
+
+.debug-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--vscode-panel-border);
+}
+
+.debug-toggle {
+    background: var(--vscode-button-background);
+    color: var(--vscode-button-foreground);
+    border: none;
+    padding: 4px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 11px;
+}
+
+.debug-toggle:hover {
+    background: var(--vscode-button-hoverBackground);
+}
+
+.debug-content {
+    display: block;
+}
+
+.debug-panel.collapsed .debug-content {
+    display: none;
+}
+
+.debug-item {
+    margin-bottom: 12px;
+    padding: 8px;
+    background-color: var(--vscode-sideBar-background);
+    border-radius: 4px;
+    border-left: 3px solid var(--vscode-focusBorder);
+}
+
+.debug-item strong {
+    display: block;
+    margin-bottom: 4px;
+    color: var(--vscode-textLink-foreground);
+}
+
+.debug-item div {
+    font-family: 'Courier New', monospace;
+    font-size: 11px;
+    white-space: pre-wrap;
+    word-break: break-all;
+    color: var(--vscode-foreground);
+    background-color: var(--vscode-editor-background);
+    padding: 6px;
+    border-radius: 3px;
+    max-height: 200px;
+    overflow-y: auto;
 }

@@ -2,16 +2,17 @@
 
 ## Backlog
 
-### Implement n:n reconciliation between multiple sources
+### 1 Implement n:n reconciliation between multiple sources
 
   - id: T-001
   - tags: [reconciliation, multiple-sources, n-to-n, backend, database]
-  - priority: medium
+  - priority: high
   - workload: Hard
   - milestone: sprint-26-1_1
-  - start: 2026-01-01
-  - due: 2026-01-31
+  - start: 2026-01-05
+  - due: 2026-01-30
   - detail: ./tasks/T-001.md
+  - defaultExpanded: false
 
 ### Extract data by category type
 
@@ -47,7 +48,6 @@
   - id: T-012
   - tags: [database, performance, optimization, backend]
   - priority: high
-  - workload: Medium
   - milestone: sprint-26-2_1
   - start: 2026-02-01
   - due: 2026-02-28
@@ -67,7 +67,6 @@
   - id: T-017
   - tags: [documentation, code-quality, maintenance]
   - priority: low
-  - workload: Medium
   - start: 2026-02-15
   - due: 2026-03-01
 
@@ -83,6 +82,7 @@
   - updated: 2025-12-23
   - milestone: sprint-25-12_2
   - start: 2025-12-16
+  - detail: ./tasks/T-004.md
 
 ### Replace window.alert and confirm with standard dialog modals
 
@@ -91,6 +91,7 @@
   - priority: medium
   - milestone: sprint-25-12_2
   - start: 2025-12-16
+  - detail: ./tasks/T-005.md
 
 ### Sort transactions by time proximity in the database
 
@@ -99,6 +100,7 @@
   - priority: medium
   - milestone: sprint-25-12_2
   - start: 2025-12-16
+  - detail: ./tasks/T-006.md
 
 ### Remove backend script dependencies
 
@@ -123,7 +125,6 @@
   - id: T-009
   - tags: [database, schema, backend, architecture]
   - priority: high
-  - workload: Medium
   - milestone: sprint-25-11_1
   - start: 2025-11-01
 
@@ -172,3 +173,4 @@
 ### This file is automatically updated by AI based on rules in [../RULES.md](../RULES.md)
 
   - id: 37q28yud7
+

@@ -26,6 +26,23 @@
             "presentation": {
                 "group": "watch",
                 "reveal": "never"
+            },
+            "problemMatcher": {
+                "owner": "esbuild",
+                "pattern": [
+                    {
+                        "regexp": "^\\s*(.+):(\\d+):(\\d+):\\s*(.*)$",
+                        "file": 1,
+                        "line": 2,
+                        "column": 3,
+                        "message": 4
+                    }
+                ],
+                "background": {
+                    "activeOnStart": true,
+                    "beginsPattern": "\\[watch\\] build started",
+                    "endsPattern": "\\[watch\\] build finished"
+                }
             }
         },
 		{
@@ -58,6 +75,77 @@
 				"npm: watch-tests"
 			],
 			"problemMatcher": []
+		},
+		{
+			"label": "Watch Logs",
+			"type": "shell",
+			"command": "tail -f .logs/extension.log",
+			"presentation": {
+				"reveal": "always",
+				"panel": "dedicated",
+				"focus": true,
+				"clear": true,
+				"group": "logs"
+			},
+			"problemMatcher": [],
+			"isBackground": true,
+			"runOptions": {
+				"runOn": "default"
+			}
+		},
+		{
+			"label": "Test Parser",
+			"type": "shell",
+			"command": "npm run test:parser -- example-tasks/TASKS.md",
+			"presentation": {
+				"reveal": "always",
+				"panel": "dedicated",
+				"focus": true,
+				"clear": true,
+				"group": "logs"
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "Dev Standalone",
+			"type": "npm",
+			"script": "dev:standalone",
+			"presentation": {
+				"reveal": "always",
+				"panel": "dedicated",
+				"focus": true,
+				"clear": true,
+				"group": "logs"
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "Watch Parser Logs",
+			"type": "shell",
+			"command": "tail -f .logs/parser-test.log",
+			"presentation": {
+				"reveal": "always",
+				"panel": "dedicated",
+				"focus": true,
+				"clear": true,
+				"group": "logs"
+			},
+			"problemMatcher": [],
+			"isBackground": true
+		},
+		{
+			"label": "Watch Dev Logs",
+			"type": "shell",
+			"command": "tail -f .logs/dev-mode.log",
+			"presentation": {
+				"reveal": "always",
+				"panel": "dedicated",
+				"focus": true,
+				"clear": true,
+				"group": "logs"
+			},
+			"problemMatcher": [],
+			"isBackground": true
 		}
 	]
 }

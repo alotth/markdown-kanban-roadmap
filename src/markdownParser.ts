@@ -1,5 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
+const DEBUG_LOG_PATH = '/Users/alt/repos/markdown-kanban-roadmap/.cursor/debug.log';
 
 export interface KanbanTask {
   id: string;
@@ -351,11 +352,84 @@ export class MarkdownKanbanParser {
     if (task.milestone) {
       properties += `  - milestone: ${task.milestone}\n`;
     }
+    // #region agent log
+    if (task.id === 'T-001') {
+      try {
+        const logData = JSON.stringify({location:'markdownParser.ts:356',message:'generateTaskProperties - checking dates',data:{taskId:task.id, hasStartDate:'startDate' in task, startDate:task.startDate, hasDueDate:'dueDate' in task, dueDate:task.dueDate, startDateType:typeof task.startDate},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'}) + '\n';
+        const logPath = '/Users/alt/repos/markdown-kanban-roadmap/.cursor/debug.log';
+        const logDir = '/Users/alt/repos/markdown-kanban-roadmap/.cursor';
+        if (!fs.existsSync(logDir)) {
+          fs.mkdirSync(logDir, { recursive: true });
+        }
+        fs.appendFileSync(logPath, logData);
+        if (typeof fetch !== 'undefined') {
+          fetch('http://127.0.0.1:7244/ingest/aba74913-58f8-46f6-a42e-073f503b4cf6',{method:'POST',headers:{'Content-Type':'application/json'},body:logData.trim()}).catch(()=>{});
+        }
+      } catch(e) {}
+    }
+    // #endregion
     if (task.startDate) {
       properties += `  - start: ${task.startDate}\n`;
+      // #region agent log
+      console.error('=== Added start date to properties ===', {
+        taskId: task.id,
+        startDate: task.startDate,
+        propertiesLength: properties.length
+      });
+      if (task.id === 'T-001') {
+        try {
+          const logData = JSON.stringify({location:'markdownParser.ts:365',message:'Added start date to properties',data:{taskId:task.id, startDate:task.startDate, propertiesLength:properties.length},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'}) + '\n';
+          const logPath = '/Users/alt/repos/markdown-kanban-roadmap/.cursor/debug.log';
+          const logDir = '/Users/alt/repos/markdown-kanban-roadmap/.cursor';
+          if (!fs.existsSync(logDir)) {
+            fs.mkdirSync(logDir, { recursive: true });
+          }
+          fs.appendFileSync(logPath, logData);
+          if (typeof fetch !== 'undefined') {
+            fetch('http://127.0.0.1:7244/ingest/aba74913-58f8-46f6-a42e-073f503b4cf6',{method:'POST',headers:{'Content-Type':'application/json'},body:logData.trim()}).catch(()=>{});
+          }
+        } catch(e) {}
+      }
+      // #endregion
+    } else {
+      // #region agent log
+      console.error('=== startDate is FALSY, NOT adding to properties ===', {
+        taskId: task.id,
+        startDate: task.startDate,
+        startDateType: typeof task.startDate,
+        hasStartDate: 'startDate' in task
+      });
+      if (task.id === 'T-001') {
+        try {
+          const logData = JSON.stringify({location:'markdownParser.ts:374',message:'startDate is FALSY, NOT adding',data:{taskId:task.id, startDate:task.startDate, startDateType:typeof task.startDate, hasStartDate:'startDate' in task},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'}) + '\n';
+          const logPath = '/Users/alt/repos/markdown-kanban-roadmap/.cursor/debug.log';
+          const logDir = '/Users/alt/repos/markdown-kanban-roadmap/.cursor';
+          if (!fs.existsSync(logDir)) {
+            fs.mkdirSync(logDir, { recursive: true });
+          }
+          fs.appendFileSync(logPath, logData);
+          if (typeof fetch !== 'undefined') {
+            fetch('http://127.0.0.1:7244/ingest/aba74913-58f8-46f6-a42e-073f503b4cf6',{method:'POST',headers:{'Content-Type':'application/json'},body:logData.trim()}).catch(()=>{});
+          }
+        } catch(e) {}
+      }
+      // #endregion
     }
     if (task.dueDate) {
       properties += `  - due: ${task.dueDate}\n`;
+      // #region agent log
+      console.log('=== Added due date to properties ===', {
+          taskId: task.id,
+          dueDate: task.dueDate
+      });
+      // #endregion
+    } else {
+      // #region agent log
+      console.log('=== dueDate is FALSY, NOT adding to properties ===', {
+          taskId: task.id,
+          dueDate: task.dueDate
+      });
+      // #endregion
     }
     if (task.detailPath) {
       properties += `  - detail: ${task.detailPath}\n`;

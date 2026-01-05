@@ -5,3 +5,17 @@ node_modules
 *.vsix
 .DS_Store
 test_files/
+
+# Development and documentation files
+PUBLISH.md
+PUBLISH-CHECKLIST.md
+README-DEV.md
+
+# Cursor IDE files
+.cursor/
+
+# Logs
+.logs/
+
+# Development scripts
+scripts/

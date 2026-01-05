@@ -7,12 +7,60 @@ let isEditMode = false
 let currentTagFilter = ''
 let currentSort = 'none'
 
+// Debug panel functions
+function updateDebugPanel(type, data) {
+  let elementId;
+  if (type === 'form-data') {
+    elementId = 'debug-form-data';
+  } else if (type === 'message-sent') {
+    elementId = 'debug-message-sent';
+  } else if (type === 'backend-state') {
+    elementId = 'debug-backend-state';
+  }
+  const element = document.getElementById(elementId);
+  if (element) {
+    element.textContent = JSON.stringify(data, null, 2);
+  }
+}
+
+// Debug panel toggle - initialize when DOM is ready
+function initDebugPanel() {
+  const debugToggle = document.getElementById('debug-toggle');
+  const debugPanel = document.getElementById('debug-panel');
+  if (debugToggle && debugPanel) {
+    debugToggle.addEventListener('click', () => {
+      debugPanel.classList.toggle('collapsed');
+      debugToggle.textContent = debugPanel.classList.contains('collapsed') ? 'Show' : 'Hide';
+    });
+  }
+}
+
+// Initialize debug panel
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initDebugPanel);
+} else {
+  initDebugPanel();
+}
+
 // Listen for messages from the extension
 window.addEventListener('message', event => {
   const message = event.data
   switch (message.type) {
     case 'updateBoard':
       currentBoard = message.board
+      // #region agent log - Check task state after update
+      const taskT001 = currentBoard?.columns?.flatMap(c => c.tasks)?.find(t => t.id === 'T-001');
+      if (taskT001) {
+        updateDebugPanel('backend-state', {
+          taskId: 'T-001',
+          startDate: taskT001.startDate || '(undefined)',
+          dueDate: taskT001.dueDate || '(undefined)',
+          hasStartDate: 'startDate' in taskT001,
+          hasDueDate: 'dueDate' in taskT001,
+          taskObject: taskT001
+        });
+      }
+      // #endregion
       renderBoard()
       break
     case 'toggleTaskExpansion':
@@ -180,7 +228,7 @@ function createTaskElement (task, columnId) {
              data-column-id="${columnId}">
             <div class="task-header">
                 <div class="task-drag-handle" title="Drag to move task">⋮⋮</div>
-                <div class="task-title">${task.title}</div>
+                <div class="task-title">${formatTaskTitle(task)}</div>
                 <div class="task-meta">
                     ${createStepsProgressElement(stepsProgress)}
                     ${createPriorityElement(task.priority, priorityClass)}
@@ -192,6 +240,13 @@ function createTaskElement (task, columnId) {
             ${createTaskActions(task.id, columnId)}
         </div>
     `
+}
+
+function formatTaskTitle (task) {
+  if (task.id) {
+    return `<span class="task-id">[${task.id}]</span> ${task.title}`
+  }
+  return task.title
 }
 
 function getTaskExpansionState(task) {
@@ -219,11 +274,13 @@ function createPriorityElement(priority, priorityClass) {
 
 function createTaskTagsRow(task, deadlineInfo) {
   const hasTagsOrWorkload = task.workload || (task.tags && task.tags.length > 0)
-  if (!hasTagsOrWorkload && !deadlineInfo) return ''
+  const hasStartDate = task.startDate
+  if (!hasTagsOrWorkload && !deadlineInfo && !hasStartDate) return ''
 
   return `
     <div class="task-tags-row">
         ${hasTagsOrWorkload ? createTaskTagsElement(task) : ''}
+        ${hasStartDate ? createStartDateElement(task.startDate) : ''}
         ${deadlineInfo ? createDeadlineElement(deadlineInfo, task.dueDate) : ''}
     </div>
   `
@@ -238,6 +295,10 @@ function createTaskTagsElement(task) {
     : ''
 
   return `<div class="task-tags">${workloadTag}${tags}</div>`
+}
+
+function createStartDateElement(startDate) {
+  return `<div class="task-start-date" title="Start date: ${startDate}">Started: ${startDate}</div>`
 }
 
 function createDeadlineElement(deadlineInfo, dueDate) {
@@ -287,6 +348,13 @@ function createTaskStepsElement(task, columnId) {
 }
 
 function createTaskInfoElement(task) {
+  const startInfo = task.startDate
+    ? `<div class="task-info-item">
+         <span class="task-info-label">Start:</span>
+         <span>${task.startDate}</span>
+       </div>`
+    : ''
+
   const dueInfo = task.dueDate
     ? `<div class="task-info-item">
          <span class="task-info-label">Due:</span>
@@ -301,7 +369,7 @@ function createTaskInfoElement(task) {
        </div>`
     : ''
 
-  return `<div class="task-info">${dueInfo}${workloadInfo}</div>`
+  return `<div class="task-info">${startInfo}${dueInfo}${workloadInfo}</div>`
 }
 
 function createTaskActions(taskId, columnId) {
@@ -753,7 +821,7 @@ function createArchiveTaskElement(task, columnId) {
   return `
     <div class="archive-task-item" data-task-id="${task.id}" data-column-id="${columnId}">
       <div class="archive-task-header">
-        <span class="archive-task-title">${task.title}</span>
+        <span class="archive-task-title">${formatTaskTitle(task)}</span>
         ${task.priority ? `<span class="task-priority ${priorityClass}" title="Priority: ${getPriorityText(task.priority)}"></span>` : ''}
       </div>
       ${deadlineInfo ? `<div class="archive-task-deadline deadline-${deadlineInfo.status}">${deadlineInfo.text}</div>` : ''}
@@ -821,6 +889,7 @@ function populateTaskForm(columnId, taskId) {
   document.getElementById('task-description').value = task.description || ''
   document.getElementById('task-priority').value = task.priority || ''
   document.getElementById('task-workload').value = task.workload || ''
+  document.getElementById('task-start-date').value = task.startDate || ''
   document.getElementById('task-due-date').value = task.dueDate || ''
   document.getElementById('task-default-expanded').checked = task.defaultExpanded || false
 
@@ -1517,16 +1586,45 @@ document.addEventListener('DOMContentLoaded', () => {
 document.getElementById('task-form').addEventListener('submit', e => {
   e.preventDefault()
 
+  const startDateInput = document.getElementById('task-start-date');
+  const dueDateInput = document.getElementById('task-due-date');
+  const startDateValue = startDateInput ? startDateInput.value : '';
+  const dueDateValue = dueDateInput ? dueDateInput.value : '';
+  
+  // #region agent log
+  fetch('http://127.0.0.1:7244/ingest/aba74913-58f8-46f6-a42e-073f503b4cf6',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'webviewScript.js:1543',message:'Form submit - raw input values',data:{startDateValue, dueDateValue, startDateInputExists:!!startDateInput, dueDateInputExists:!!dueDateInput},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
+  // #endregion
+  
   const taskData = {
     title: document.getElementById('task-title').value.trim(),
     description: document.getElementById('task-description').value.trim(),
     priority: document.getElementById('task-priority').value || undefined,
     workload: document.getElementById('task-workload').value || undefined,
-    dueDate: document.getElementById('task-due-date').value || undefined,
+    startDate: startDateValue ? startDateValue : undefined,
+    dueDate: dueDateValue ? dueDateValue : undefined,
     defaultExpanded: document.getElementById('task-default-expanded').checked,
     tags: getFormTags(),
     steps: getFormSteps()
   }
+
+  // #region agent log - Update debug panel
+  updateDebugPanel('form-data', {
+    rawInputs: {
+      startDateValue: startDateValue || '(empty)',
+      dueDateValue: dueDateValue || '(empty)'
+    },
+    taskData: {
+      startDate: taskData.startDate || '(undefined)',
+      dueDate: taskData.dueDate || '(undefined)',
+      isEditMode: isEditMode,
+      taskId: currentEditingTask
+    }
+  });
+  // #endregion
+
+  // #region agent log
+  fetch('http://127.0.0.1:7244/ingest/aba74913-58f8-46f6-a42e-073f503b4cf6',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'webviewScript.js:1556',message:'Form submit - taskData object',data:{startDate:taskData.startDate, dueDate:taskData.dueDate, isEditMode, taskId:currentEditingTask},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
+  // #endregion
 
   if (!taskData.title) {
     alert('Please enter a task title')
@@ -1534,18 +1632,25 @@ document.getElementById('task-form').addEventListener('submit', e => {
   }
 
   if (isEditMode) {
-    vscode.postMessage({
+    // #region agent log
+    fetch('http://127.0.0.1:7244/ingest/aba74913-58f8-46f6-a42e-073f503b4cf6',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'webviewScript.js:1564',message:'Sending editTask message',data:{taskId:currentEditingTask, columnId:currentEditingColumn, startDate:taskData.startDate, dueDate:taskData.dueDate},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
+    // #endregion
+    const messageToSend = {
       type: 'editTask',
       taskId: currentEditingTask,
       columnId: currentEditingColumn,
       taskData: taskData
-    })
+    };
+    updateDebugPanel('message-sent', messageToSend);
+    vscode.postMessage(messageToSend);
   } else {
-    vscode.postMessage({
+    const messageToSend = {
       type: 'addTask',
       columnId: currentEditingColumn,
       taskData: taskData
-    })
+    };
+    updateDebugPanel('message-sent', messageToSend);
+    vscode.postMessage(messageToSend);
   }
 
   closeTaskModal()

@@ -1,3 +1,7 @@
+import * as fs from 'fs';
+import * as path from 'path';
+const DEBUG_LOG_PATH = '/Users/alt/repos/markdown-kanban-roadmap/.cursor/debug.log';
+
 export interface KanbanTask {
   id: string;
   title: string;
@@ -7,6 +11,10 @@ export interface KanbanTask {
   workload?: 'Easy' | 'Normal' | 'Hard' | 'Extreme';
   dueDate?: string;
   startDate?: string;
+  updated?: string;
+  completed?: string;
+  milestone?: string;
+  detailPath?: string;
   defaultExpanded?: boolean;
   steps?: Array<{ text: string; completed: boolean }>;
 }
@@ -180,10 +188,16 @@ export class MarkdownKanbanParser {
     return board;
   }
 
+  static parseMarkdownWithDetails(content: string, boardFilePath: string): KanbanBoard {
+    const board = this.parseMarkdown(content);
+    this.applyDetailsToBoard(board, boardFilePath);
+    return board;
+  }
+
   private static isTaskTitle(line: string, trimmedLine: string): boolean {
     // 排除属性行和步骤项
     if (line.startsWith('- ') && 
-        (trimmedLine.match(/^\s*- (due|tags|priority|workload|steps|defaultExpanded):/) ||
+        (trimmedLine.match(/^\s*- (id|due|tags|priority|workload|steps|defaultExpanded|start|milestone|detail|updated|completed):/) ||
          line.match(/^\s{6,}- \[([ x])\]/))) {
       return false;
     }
@@ -193,15 +207,23 @@ export class MarkdownKanbanParser {
   }
 
   private static parseTaskProperty(line: string, task: KanbanTask): boolean {
-    const propertyMatch = line.match(/^\s+- (due|tags|priority|workload|steps|defaultExpanded):\s*(.*)$/);
+    const propertyMatch = line.match(/^\s+- (id|due|tags|priority|workload|steps|defaultExpanded|start|milestone|detail|updated|completed):\s*(.*)$/);
     if (!propertyMatch) return false;
 
     const [, propertyName, propertyValue] = propertyMatch;
     const value = propertyValue.trim();
 
     switch (propertyName) {
+      case 'id':
+        if (value) {
+          task.id = value;
+        }
+        break;
       case 'due':
         task.dueDate = value;
+        break;
+      case 'start':
+        task.startDate = value;
         break;
       case 'tags':
         const tagsMatch = value.match(/\[(.*)\]/);
@@ -217,6 +239,20 @@ export class MarkdownKanbanParser {
       case 'workload':
         if (['Easy', 'Normal', 'Hard', 'Extreme'].includes(value)) {
           task.workload = value as 'Easy' | 'Normal' | 'Hard' | 'Extreme';
+        }
+        break;
+      case 'updated':
+        task.updated = value;
+        break;
+      case 'completed':
+        task.completed = value;
+        break;
+      case 'milestone':
+        task.milestone = value;
+        break;
+      case 'detail':
+        if (value) {
+          task.detailPath = value;
         }
         break;
       case 'defaultExpanded':
@@ -277,7 +313,7 @@ export class MarkdownKanbanParser {
         markdown += this.generateTaskProperties(task);
 
         // 添加描述
-        if (task.description && task.description.trim() !== '') {
+        if (!task.detailPath && task.description && task.description.trim() !== '') {
           markdown += `    \`\`\`md\n`;
           const descriptionLines = task.description.trim().split('\n');
           for (const descLine of descriptionLines) {
@@ -295,8 +331,8 @@ export class MarkdownKanbanParser {
   private static generateTaskProperties(task: KanbanTask): string {
     let properties = '';
 
-    if (task.dueDate) {
-      properties += `  - due: ${task.dueDate}\n`;
+    if (task.id) {
+      properties += `  - id: ${task.id}\n`;
     }
     if (task.tags && task.tags.length > 0) {
       properties += `  - tags: [${task.tags.join(', ')}]\n`;
@@ -307,10 +343,101 @@ export class MarkdownKanbanParser {
     if (task.workload) {
       properties += `  - workload: ${task.workload}\n`;
     }
+    if (task.updated) {
+      properties += `  - updated: ${task.updated}\n`;
+    }
+    if (task.completed) {
+      properties += `  - completed: ${task.completed}\n`;
+    }
+    if (task.milestone) {
+      properties += `  - milestone: ${task.milestone}\n`;
+    }
+    // #region agent log
+    if (task.id === 'T-001') {
+      try {
+        const logData = JSON.stringify({location:'markdownParser.ts:356',message:'generateTaskProperties - checking dates',data:{taskId:task.id, hasStartDate:'startDate' in task, startDate:task.startDate, hasDueDate:'dueDate' in task, dueDate:task.dueDate, startDateType:typeof task.startDate},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'}) + '\n';
+        const logPath = '/Users/alt/repos/markdown-kanban-roadmap/.cursor/debug.log';
+        const logDir = '/Users/alt/repos/markdown-kanban-roadmap/.cursor';
+        if (!fs.existsSync(logDir)) {
+          fs.mkdirSync(logDir, { recursive: true });
+        }
+        fs.appendFileSync(logPath, logData);
+        if (typeof fetch !== 'undefined') {
+          fetch('http://127.0.0.1:7244/ingest/aba74913-58f8-46f6-a42e-073f503b4cf6',{method:'POST',headers:{'Content-Type':'application/json'},body:logData.trim()}).catch(()=>{});
+        }
+      } catch(e) {}
+    }
+    // #endregion
+    if (task.startDate) {
+      properties += `  - start: ${task.startDate}\n`;
+      // #region agent log
+      console.error('=== Added start date to properties ===', {
+        taskId: task.id,
+        startDate: task.startDate,
+        propertiesLength: properties.length
+      });
+      if (task.id === 'T-001') {
+        try {
+          const logData = JSON.stringify({location:'markdownParser.ts:365',message:'Added start date to properties',data:{taskId:task.id, startDate:task.startDate, propertiesLength:properties.length},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'}) + '\n';
+          const logPath = '/Users/alt/repos/markdown-kanban-roadmap/.cursor/debug.log';
+          const logDir = '/Users/alt/repos/markdown-kanban-roadmap/.cursor';
+          if (!fs.existsSync(logDir)) {
+            fs.mkdirSync(logDir, { recursive: true });
+          }
+          fs.appendFileSync(logPath, logData);
+          if (typeof fetch !== 'undefined') {
+            fetch('http://127.0.0.1:7244/ingest/aba74913-58f8-46f6-a42e-073f503b4cf6',{method:'POST',headers:{'Content-Type':'application/json'},body:logData.trim()}).catch(()=>{});
+          }
+        } catch(e) {}
+      }
+      // #endregion
+    } else {
+      // #region agent log
+      console.error('=== startDate is FALSY, NOT adding to properties ===', {
+        taskId: task.id,
+        startDate: task.startDate,
+        startDateType: typeof task.startDate,
+        hasStartDate: 'startDate' in task
+      });
+      if (task.id === 'T-001') {
+        try {
+          const logData = JSON.stringify({location:'markdownParser.ts:374',message:'startDate is FALSY, NOT adding',data:{taskId:task.id, startDate:task.startDate, startDateType:typeof task.startDate, hasStartDate:'startDate' in task},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'}) + '\n';
+          const logPath = '/Users/alt/repos/markdown-kanban-roadmap/.cursor/debug.log';
+          const logDir = '/Users/alt/repos/markdown-kanban-roadmap/.cursor';
+          if (!fs.existsSync(logDir)) {
+            fs.mkdirSync(logDir, { recursive: true });
+          }
+          fs.appendFileSync(logPath, logData);
+          if (typeof fetch !== 'undefined') {
+            fetch('http://127.0.0.1:7244/ingest/aba74913-58f8-46f6-a42e-073f503b4cf6',{method:'POST',headers:{'Content-Type':'application/json'},body:logData.trim()}).catch(()=>{});
+          }
+        } catch(e) {}
+      }
+      // #endregion
+    }
+    if (task.dueDate) {
+      properties += `  - due: ${task.dueDate}\n`;
+      // #region agent log
+      console.log('=== Added due date to properties ===', {
+          taskId: task.id,
+          dueDate: task.dueDate
+      });
+      // #endregion
+    } else {
+      // #region agent log
+      console.log('=== dueDate is FALSY, NOT adding to properties ===', {
+          taskId: task.id,
+          dueDate: task.dueDate
+      });
+      // #endregion
+    }
+    if (task.detailPath) {
+      properties += `  - detail: ${task.detailPath}\n`;
+    }
     if (task.defaultExpanded !== undefined) {
       properties += `  - defaultExpanded: ${task.defaultExpanded}\n`;
     }
-    if (task.steps && task.steps.length > 0) {
+    if (!task.detailPath && task.steps && task.steps.length > 0) {
       properties += `  - steps:\n`;
       for (const step of task.steps) {
         const checkbox = step.completed ? '[x]' : '[ ]';
@@ -319,5 +446,132 @@ export class MarkdownKanbanParser {
     }
 
     return properties;
+  }
+
+  static resolveDetailFilePath(detailPath: string, boardFilePath: string): string {
+    if (path.isAbsolute(detailPath)) {
+      return detailPath;
+    }
+    return path.resolve(path.dirname(boardFilePath), detailPath);
+  }
+
+  static parseTaskDetailMarkdown(content: string): Pick<KanbanTask, 'steps' | 'description'> {
+    const lines = content.replace(/\r\n/g, '\n').replace(/\r/g, '\n').split('\n');
+    const steps: Array<{ text: string; completed: boolean }> = [];
+    const descriptionLines: string[] = [];
+    let inSteps = false;
+    let inDescription = false;
+    let inCodeBlock = false;
+
+    for (const line of lines) {
+      const trimmedLine = line.trim();
+
+      if (inCodeBlock && inDescription) {
+        if (trimmedLine === '```') {
+          inCodeBlock = false;
+          inDescription = false;
+          continue;
+        }
+        descriptionLines.push(line.replace(/^\s{4,}/, ''));
+        continue;
+      }
+
+      if (line.match(/^\s+- steps:\s*$/)) {
+        inSteps = true;
+        continue;
+      }
+
+      if (inSteps) {
+        const stepMatch = line.match(/^\s{6,}- \[([ x])\]\s*(.*)$/);
+        if (stepMatch) {
+          const [, checkmark, text] = stepMatch;
+          steps.push({
+            text: text.trim(),
+            completed: checkmark === 'x'
+          });
+          continue;
+        }
+        if (trimmedLine === '') {
+          continue;
+        }
+        inSteps = false;
+      }
+
+      if (line.match(/^\s+```md/) || line.match(/^\s+```/)) {
+        inDescription = true;
+        inCodeBlock = true;
+        continue;
+      }
+    }
+
+    const detail: Pick<KanbanTask, 'steps' | 'description'> = {};
+    if (steps.length > 0) {
+      detail.steps = steps;
+    }
+    if (descriptionLines.length > 0) {
+      detail.description = descriptionLines.join('\n').trim();
+    }
+    return detail;
+  }
+
+  static generateTaskDetailMarkdown(task: KanbanTask): string {
+    const headerId = task.id ? task.id : 'Task';
+    let markdown = `# ${headerId}\n\n`;
+
+    if (task.steps && task.steps.length > 0) {
+      markdown += `  - steps:\n`;
+      for (const step of task.steps) {
+        const checkbox = step.completed ? '[x]' : '[ ]';
+        markdown += `      - ${checkbox} ${step.text}\n`;
+      }
+    }
+
+    if (task.description && task.description.trim() !== '') {
+      markdown += `    \`\`\`md\n`;
+      const descriptionLines = task.description.trim().split('\n');
+      for (const descLine of descriptionLines) {
+        markdown += `    ${descLine}\n`;
+      }
+      markdown += `    \`\`\`\n`;
+    }
+
+    return markdown.trimEnd() + '\n';
+  }
+
+  private static applyDetailsToBoard(board: KanbanBoard, boardFilePath: string): void {
+    for (const column of board.columns) {
+      for (const task of column.tasks) {
+        if (!task.detailPath) {
+          continue;
+        }
+        const detailFilePath = this.resolveDetailFilePath(task.detailPath, boardFilePath);
+        const detailContent = this.readDetailFile(detailFilePath);
+        if (!detailContent) {
+          delete task.steps;
+          delete task.description;
+          continue;
+        }
+        const detail = this.parseTaskDetailMarkdown(detailContent);
+        if (detail.steps) {
+          task.steps = detail.steps;
+        } else {
+          delete task.steps;
+        }
+        if (detail.description) {
+          task.description = detail.description;
+        } else {
+          delete task.description;
+        }
+      }
+    }
+  }
+
+  private static readDetailFile(detailFilePath: string): string | null {
+    try {
+      return fs.readFileSync(detailFilePath, 'utf8');
+    } catch (error) {
+      console.warn(`Failed to read detail file: ${detailFilePath}`, error);
+      return null;
+    }
   }
 }

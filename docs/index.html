@@ -1,0 +1,1267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Markdown Kanban Roadmap - VS Code extension for task management with Kanban boards">
+    <title>Markdown Kanban Roadmap - Developer Documentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --bg-primary: #0d1117;
+            --bg-secondary: #161b22;
+            --bg-tertiary: #21262d;
+            --border: #30363d;
+            --text-primary: #c9d1d9;
+            --text-secondary: #8b949e;
+            --accent: #58a6ff;
+            --accent-hover: #79c0ff;
+            --success: #3fb950;
+            --warning: #d29922;
+            --danger: #f85149;
+            --code-bg: #161b22;
+            --code-border: #30363d;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            color: var(--text-primary);
+            background: var(--bg-primary);
+            padding: 0;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border);
+            padding: 40px 20px;
+            margin-bottom: 40px;
+        }
+        
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+        
+        header .subtitle {
+            color: var(--text-secondary);
+            font-size: 1.2em;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.85em;
+            font-weight: 500;
+            margin: 0 5px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+        }
+        
+        .badge-vscode { color: var(--accent); border-color: var(--accent); }
+        .badge-markdown { color: var(--success); border-color: var(--success); }
+        .badge-kanban { color: var(--warning); border-color: var(--warning); }
+        
+        .nav-links {
+            margin-top: 20px;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .nav-links a {
+            color: var(--accent);
+            text-decoration: none;
+            padding: 8px 16px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+        
+        .nav-links a:hover {
+            background: var(--bg-tertiary);
+            border-color: var(--accent);
+        }
+        
+        .section {
+            margin-bottom: 60px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 30px;
+        }
+        
+        .section h2 {
+            color: var(--accent);
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .section h3 {
+            color: var(--text-primary);
+            font-size: 1.4em;
+            margin: 30px 0 15px;
+        }
+        
+        .section h4 {
+            color: var(--accent);
+            font-size: 1.2em;
+            margin: 20px 0 10px;
+        }
+        
+        code {
+            background: var(--code-bg);
+            border: 1px solid var(--code-border);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'SFMono-Regular', 'Consolas', 'Liberation Mono', 'Menlo', monospace;
+            font-size: 0.9em;
+            color: var(--accent);
+        }
+        
+        pre {
+            background: var(--code-bg);
+            border: 1px solid var(--code-border);
+            border-radius: 6px;
+            padding: 20px;
+            overflow-x: auto;
+            margin: 20px 0;
+            position: relative;
+        }
+        
+        pre code {
+            background: none;
+            border: none;
+            padding: 0;
+            color: var(--text-primary);
+            font-size: 0.9em;
+            line-height: 1.6;
+        }
+        
+        .code-block-title {
+            display: block;
+            background: var(--bg-tertiary);
+            border-bottom: 1px solid var(--border);
+            padding: 8px 15px;
+            margin: -20px -20px 15px -20px;
+            font-size: 0.85em;
+            color: var(--text-secondary);
+            font-family: 'SFMono-Regular', monospace;
+        }
+        
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .feature-card {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 20px;
+            transition: border-color 0.2s;
+        }
+        
+        .feature-card:hover {
+            border-color: var(--accent);
+        }
+        
+        .feature-card h4 {
+            color: var(--accent);
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+        
+        .feature-card code {
+            display: block;
+            margin: 10px 0;
+            padding: 10px;
+        }
+        
+        .alert {
+            background: var(--bg-tertiary);
+            border-left: 4px solid var(--accent);
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        
+        .alert-info {
+            border-left-color: var(--accent);
+        }
+        
+        .alert-warning {
+            border-left-color: var(--warning);
+            background: rgba(210, 153, 34, 0.1);
+        }
+        
+        .alert-success {
+            border-left-color: var(--success);
+            background: rgba(63, 185, 80, 0.1);
+        }
+        
+        .alert::before {
+            content: "";
+            margin-right: 0;
+        }
+        
+        .alert-warning::before {
+            content: "";
+        }
+        
+        .alert-success::before {
+            content: "";
+        }
+        
+        ul, ol {
+            margin-left: 25px;
+            margin-top: 10px;
+        }
+        
+        li {
+            margin: 8px 0;
+            color: var(--text-secondary);
+        }
+        
+        a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+        
+        a:hover {
+            text-decoration: underline;
+        }
+        
+        .toc {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .toc h3 {
+            color: var(--accent);
+            margin-bottom: 15px;
+        }
+        
+        .toc ul {
+            list-style: none;
+            margin-left: 0;
+        }
+        
+        .toc li {
+            margin: 8px 0;
+        }
+        
+        .toc a {
+            color: var(--text-secondary);
+            transition: color 0.2s;
+        }
+        
+        .toc a:hover {
+            color: var(--accent);
+        }
+        
+        .terminal {
+            background: var(--code-bg);
+            border: 1px solid var(--code-border);
+            border-radius: 6px;
+            padding: 15px;
+            margin: 20px 0;
+            font-family: 'SFMono-Regular', monospace;
+            position: relative;
+        }
+        
+        .terminal::before {
+            content: "$ ";
+            color: var(--success);
+            margin-right: 8px;
+        }
+        
+        .terminal code {
+            background: none;
+            border: none;
+            padding: 0;
+            color: var(--text-primary);
+        }
+        
+        footer {
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border);
+            padding: 30px;
+            text-align: center;
+            margin-top: 60px;
+            color: var(--text-secondary);
+        }
+        
+        .copy-button {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9em;
+            margin-top: 10px;
+            transition: background 0.2s;
+        }
+        
+        .copy-button:hover {
+            background: var(--accent-hover);
+        }
+        
+        .copy-button:active {
+            transform: scale(0.98);
+        }
+        
+        .copy-button.copied {
+            background: var(--success);
+        }
+        
+        .rules-container {
+            position: relative;
+        }
+        
+        .rules-content {
+            max-height: 400px;
+            overflow-y: auto;
+            background: var(--code-bg);
+            border: 1px solid var(--code-border);
+            border-radius: 6px;
+            padding: 20px;
+            margin: 15px 0;
+            font-family: 'SFMono-Regular', monospace;
+            font-size: 0.85em;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            margin: 20px 0;
+        }
+        
+        .image-container {
+            text-align: center;
+            margin: 30px 0;
+        }
+        
+        .image-container img {
+            max-width: 800px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+        
+        .image-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .image-grid img {
+            width: 100%;
+            margin: 0;
+        }
+        
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2em;
+            }
+            
+            .section {
+                padding: 20px;
+            }
+            
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Markdown Kanban Roadmap</h1>
+            <p class="subtitle">VS Code extension for task management with interactive Kanban boards</p>
+            <div style="margin-top: 15px;">
+                <span class="badge badge-vscode">VS Code</span>
+                <span class="badge badge-markdown">Markdown</span>
+                <span class="badge badge-kanban">Kanban</span>
+            </div>
+            <div class="nav-links">
+                <a href="#installation">Installation</a>
+                <a href="#usage">Usage</a>
+                <a href="#format">Task Format</a>
+                <a href="#ai-rules">AI Development Rules</a>
+                <a href="#organization">Team Organization</a>
+                <a href="https://github.com/alotth/markdown-kanban-roadmap" target="_blank">GitHub</a>
+            </div>
+        </header>
+        
+        <div class="toc">
+            <h3>Table of Contents</h3>
+            <ul>
+                <li><a href="#installation">Installation</a></li>
+                <li><a href="#usage">Usage</a></li>
+                <li><a href="#format">Task Format</a></li>
+                <li><a href="#features">Features</a></li>
+                <li><a href="#ai-rules">AI Development Rules</a></li>
+                <li><a href="#organization">Team Organization</a></li>
+                <li><a href="#examples">Examples</a></li>
+            </ul>
+        </div>
+        
+        <section id="installation" class="section">
+            <h2>Installation</h2>
+            
+            <h3>For Cursor Users</h3>
+            <p>If you're using <strong>Cursor IDE</strong>, add the rules to your <strong>User Rules</strong> to enable AI assistants to properly create and manage tasks:</p>
+            <ol>
+                <li>Open Cursor Settings → <strong>User Rules</strong></li>
+                <li>Copy the content from <code>rules/.cursorrules</code> (see below)</li>
+                <li>Paste it into your User Rules</li>
+            </ol>
+            
+            <div class="rules-container">
+                <h4>Copy Cursor Rules</h4>
+                <div class="rules-content" id="cursorRulesContent"># Markdown Kanban & Roadmap - Cursor Rules
+
+> **Note for AI Assistants**: These rules are suggested guidelines for AI assistants to understand how to properly create and manage tasks in the Markdown Kanban format. When working with `TASKS.md` files, follow these rules to ensure compatibility with the VS Code Markdown Kanban extension.
+
+This file defines the rules for creating and managing tasks in the Markdown Kanban format that works with the VS Code Markdown Kanban extension.
+
+## TASKS.md File Structure
+
+The `TASKS.md` file must follow the Kanban format with these required sections:
+
+- **Backlog**: Tasks that haven't been started yet
+- **Doing**: Tasks currently in progress
+- **Review**: Tasks awaiting review
+- **Done**: Completed tasks
+- **Paused**: Temporarily paused tasks
+- **Notes**: General project notes (optional)
+
+## Task Format
+
+### Basic Structure
+
+Each task must follow this format:
+
+```markdown
+### Task Name
+
+  - id: T-001
+  - tags: [tag1, tag2, tag3]
+  - priority: high|medium|low
+  - workload: Easy|Normal|Hard|Extreme
+  - milestone: sprint-26-1_1
+  - start: YYYY-MM-DD
+  - due: YYYY-MM-DD
+  - updated: YYYY-MM-DD
+  - completed: YYYY-MM-DD
+  - detail: ./tasks/T-001.md
+  - defaultExpanded: true|false
+```
+
+### Task Properties
+
+#### Required
+
+- **`id`**: Unique task identifier (format: `T-XXX` where XXX is a sequential number)
+  - Example: `T-001`, `T-002`, `T-010`
+
+#### Optional
+
+- **`tags`**: Array of tags for categorization
+  - Format: `[tag1, tag2, tag3]`
+  - Example: `[backend, frontend, ui, components]`
+  - Use descriptive and consistent tags
+
+- **`priority`**: Priority level
+  - Values: `high`, `medium`, `low`
+
+- **`workload`**: Estimated effort
+  - Values: `Easy`, `Normal`, `Hard`, `Extreme`
+
+- **`milestone`**: Milestone or marker the task belongs to
+  - Suggested format: `sprint-year-month_number` (e.g., `sprint-26-1_1` for January 2026, sprint 1)
+  - Can use custom strings (e.g., `reconciliation-nn`, `timezone-utc`)
+
+- **`start`**: Start date
+  - Format: `YYYY-MM-DD`
+  - Example: `2025-12-01`
+
+- **`due`**: Due date
+  - Format: `YYYY-MM-DD`
+  - Example: `2026-01-15`
+
+- **`updated`**: Last update date
+  - Format: `YYYY-MM-DD`
+  - Update whenever the task is modified
+
+- **`completed`**: Completion date
+  - Format: `YYYY-MM-DD`
+  - Filled when task is moved to "Done"
+
+- **`detail`**: Path to detail file
+  - Format: `./tasks/T-XXX.md`
+  - Example: `./tasks/T-001.md`
+  - Points to a markdown file with detailed description
+
+- **`defaultExpanded`**: Whether task should be expanded by default
+  - Values: `true` or `false`
+  - When `true`, task shows all details when loaded
+
+### Inline Description
+
+If not using a detail file (`detail`), you can include inline description:
+
+```markdown
+### Task Name
+
+  - id: T-001
+  - tags: [backend]
+  - priority: high
+    ```md
+    Detailed task description here.
+    Can contain multiple lines and markdown formatting.
+    ```
+```
+
+## Detail Files (tasks/T-XXX.md)
+
+When using `detail: ./tasks/T-XXX.md`, the file must follow this format:
+
+```markdown
+# T-001
+
+  - steps:
+      - [ ] Step 1 (not completed)
+      - [x] Step 2 (completed)
+      - [ ] Step 3 (not completed)
+    ```md
+    Detailed task description.
+    Can include context, requirements, examples, etc.
+    ```
+```
+
+### Steps Format
+
+- Use `- [ ]` for uncompleted steps
+- Use `- [x]` for completed steps
+- Indentation: minimum 6 spaces before `-`
+- Example:
+
+  ```markdown
+  - steps:
+      - [ ] Research existing patterns
+      - [x] Create schema design
+      - [ ] Implement endpoints
+  ```
+
+## Important Rules
+
+1. **Indentation**: All task properties must have 2 spaces indentation
+2. **Date Format**: Always use `YYYY-MM-DD` for all dates
+3. **Unique IDs**: Each task must have a unique ID in format `T-XXX`
+4. **Tags**: Use arrays in format `[tag1, tag2]` with commas and spaces
+5. **Descriptions**: Use markdown code blocks with ` ```md ` for descriptions
+6. **Steps**: Only in detail files, not in main TASKS.md
+7. **Sections**: Maintain Kanban sections (Backlog, Doing, Review, Done, Paused)
+
+## Status Flow
+
+- **Backlog** → **Doing**: When work starts
+- **Doing** → **Review**: When awaiting review
+- **Review** → **Done**: When approved/completed
+- **Doing** → **Paused**: When temporarily paused
+- **Paused** → **Doing**: When resumed
+
+## Complete Examples
+
+### Simple Task (no detail file)
+
+```markdown
+### Implement user authentication
+
+  - id: T-010
+  - tags: [authentication, security, backend, frontend]
+  - priority: high
+  - workload: Hard
+  - milestone: sprint-26-1_2
+  - start: 2026-01-15
+  - due: 2026-02-15
+```
+
+### Task with Inline Description
+
+```markdown
+### Create analytics dashboard
+
+  - id: T-011
+  - tags: [frontend, dashboard, analytics, visualization]
+  - priority: medium
+  - milestone: sprint-26-1_2
+  - start: 2026-01-15
+  - due: 2026-02-10
+    ```md
+    Create an analytics visualization with charts and metrics.
+    Include filters by date and category.
+    ```
+```
+
+### Task with Detail File
+
+```markdown
+### Implement n:n reconciliation between multiple sources
+
+  - id: T-001
+  - tags: [reconciliation, multiple-sources, n-to-n, backend, database]
+  - priority: high
+  - workload: Hard
+  - milestone: sprint-26-1_1
+  - start: 2026-01-01
+  - due: 2026-01-26
+  - detail: ./tasks/T-001.md
+  - defaultExpanded: false
+```
+
+## Common Mistakes to Avoid
+
+1. Don't use incorrect indentation (must be 2 spaces for properties)
+2. Don't mix date formats (always `YYYY-MM-DD`)
+3. Don't forget to update `updated` when modifying tasks
+4. Don't put steps directly in TASKS.md (only in detail files)
+5. Don't use duplicate IDs
+6. Don't forget to move tasks between sections when status changes
+
+## Best Practices
+
+1. Use sequential IDs (`T-001`, `T-002`, etc.)
+2. Keep tags consistent and descriptive
+3. Update `updated` whenever you modify a task
+4. Use `detail` for complex tasks with many steps
+5. Set `defaultExpanded: true` for important tasks
+6. Use milestones to group related tasks
+7. Keep Kanban sections organized
+
+## References
+
+- See `example-tasks/TASKS.md` for complete examples
+- See `example-tasks/tasks/` for detail file examples
+- See `example-tasks/README.md` for detailed documentation</div>
+                <button class="copy-button" onclick="copyRules()">Copy Rules</button>
+            </div>
+            
+            <div class="alert alert-info">
+                <strong>Note:</strong> This ensures AI assistants understand the task format and maintain compatibility with the extension.
+            </div>
+            
+            <h3>From VS Code Marketplace</h3>
+            <ol>
+                <li>Open VS Code Extensions view (<code>Ctrl+Shift+X</code> / <code>Cmd+Shift+X</code>)</li>
+                <li>Search for "Markdown Kanban Roadmap"</li>
+                <li>Click <strong>Install</strong></li>
+            </ol>
+            
+            <h3>From VSIX File</h3>
+            <div class="terminal">
+                <code>code --install-extension markdown-kanban-roadmap-*.vsix</code>
+            </div>
+            
+            <div class="alert alert-info">
+                <strong>Note:</strong> After installation, restart VS Code to activate the extension.
+            </div>
+        </section>
+        
+        <section id="usage" class="section">
+            <h2>Usage</h2>
+            
+            <h3>1. Create a TASKS.md File</h3>
+            <p>Create a markdown file (typically named <code>TASKS.md</code>) with the following structure:</p>
+            
+            <pre><code class="code-block-title">TASKS.md</code><code># Tasks - project-name
+
+## Backlog
+
+### My First Task
+
+  - id: T-001
+  - tags: [backend, api]
+  - priority: high
+  - workload: Medium
+  - start: 2026-01-15
+  - due: 2026-01-30
+
+## Doing
+
+## Review
+
+## Done
+
+## Paused
+
+## Notes</code></pre>
+            
+            <h3>2. Open Kanban View</h3>
+            <p>You have three ways to open the Kanban board:</p>
+            <ul>
+                <li><strong>Button in editor:</strong> Click the "Kanban" button in the editor toolbar</li>
+                <li><strong>Command Palette:</strong> <code>Ctrl+Shift+P</code> → "Open Kanban Board"</li>
+                <li><strong>Context menu:</strong> Right-click the markdown file → "Kanban"</li>
+            </ul>
+            
+            <h3>3. Manage Tasks</h3>
+            <ul>
+                <li><strong>Drag & Drop:</strong> Move tasks between columns</li>
+                <li><strong>Edit:</strong> Click "Edit" button on any task</li>
+                <li><strong>Add:</strong> Use "+ Add Task" button at the bottom of columns</li>
+                <li><strong>Filter:</strong> Filter tasks by tags</li>
+                <li><strong>Sort:</strong> Sort by name, date, priority, etc.</li>
+            </ul>
+        </section>
+        
+        <section id="format" class="section">
+            <h2>Task Format</h2>
+            
+            <h3>Required Properties</h3>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h4>ID</h4>
+                    <code>- id: T-001</code>
+                    <p>Unique identifier in format <code>T-XXX</code></p>
+                </div>
+            </div>
+            
+            <h3>Optional Properties</h3>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h4>Tags</h4>
+                    <code>- tags: [backend, frontend, ui]</code>
+                    <p>Array of tags for categorization</p>
+                </div>
+                
+                <div class="feature-card">
+                    <h4>Priority</h4>
+                    <code>- priority: high|medium|low</code>
+                    <p>Task priority level</p>
+                </div>
+                
+                <div class="feature-card">
+                    <h4>Workload</h4>
+                    <code>- workload: Easy|Normal|Hard|Extreme</code>
+                    <p>Estimated effort required</p>
+                </div>
+                
+                <div class="feature-card">
+                    <h4>Dates</h4>
+                    <code>- start: YYYY-MM-DD<br>- due: YYYY-MM-DD</code>
+                    <p>Start and due dates</p>
+                </div>
+                
+                <div class="feature-card">
+                    <h4>Milestone</h4>
+                    <code>- milestone: sprint-26-1_1</code>
+                    <p>Group related tasks</p>
+                </div>
+                
+                <div class="feature-card">
+                    <h4>Detail File</h4>
+                    <code>- detail: ./tasks/T-001.md</code>
+                    <p>Link to detailed task file</p>
+                </div>
+            </div>
+            
+            <h3>Complete Example</h3>
+            <p>Example with detail file reference:</p>
+            <pre><code class="code-block-title">TASKS.md</code><code>### Implement user authentication
+
+  - id: T-010
+  - tags: [authentication, security, backend, frontend]
+  - priority: high
+  - workload: Hard
+  - milestone: sprint-26-1_2
+  - start: 2026-01-15
+  - due: 2026-02-15
+  - detail: ./tasks/T-010.md
+  - defaultExpanded: false</code></pre>
+            
+            <p>Corresponding detail file:</p>
+            <pre><code class="code-block-title">tasks/T-010.md</code><code># T-010
+
+  - steps:
+      - [ ] Set up JWT token generation
+      - [ ] Implement login endpoint
+      - [ ] Create registration flow
+      - [ ] Add password reset functionality
+    ```md
+    Implement complete authentication system with JWT tokens.
+    Include login, registration, and password reset functionality.
+    
+    Requirements:
+    - Secure token storage
+    - Refresh token mechanism
+    - Password hashing with bcrypt
+    ```</code></pre>
+            
+            <div class="alert alert-warning">
+                <strong>Important:</strong> Use exactly 2 spaces for indentation. All task properties must be indented with 2 spaces.
+            </div>
+        </section>
+        
+        <section id="features" class="section">
+            <h2>Features</h2>
+            
+            <h3>Kanban Board View</h3>
+            <div class="image-container">
+                <img src="https://raw.githubusercontent.com/alotth/markdown-kanban-roadmap/main/imgs/image-kanban.png" alt="Kanban Board View" />
+            </div>
+            
+            <h3>Roadmap View</h3>
+            <div class="image-container">
+                <img src="https://raw.githubusercontent.com/alotth/markdown-kanban-roadmap/main/imgs/image-roadmap.png" alt="Roadmap View" />
+            </div>
+            
+            <h3>How to Open Kanban</h3>
+            <div class="image-container">
+                <img src="https://raw.githubusercontent.com/alotth/markdown-kanban-roadmap/main/imgs/image-to-open.png" alt="How to Open Kanban" />
+            </div>
+            
+            <h3>Feature Overview</h3>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h4>Kanban Board</h4>
+                    <p>Interactive Kanban board with drag & drop support</p>
+                </div>
+                
+                <div class="feature-card">
+                    <h4>Roadmap View</h4>
+                    <p>Timeline view of tasks with start and due dates</p>
+                </div>
+                
+                <div class="feature-card">
+                    <h4>Tag Filtering</h4>
+                    <p>Filter tasks by tags (supports multiple tags)</p>
+                </div>
+                
+                <div class="feature-card">
+                    <h4>Sorting</h4>
+                    <p>Sort by name, date, priority, workload</p>
+                </div>
+                
+                <div class="feature-card">
+                    <h4>Task Details</h4>
+                    <p>Support for detailed task files and inline descriptions</p>
+                </div>
+                
+                <div class="feature-card">
+                    <h4>Real-time Sync</h4>
+                    <p>Two-way synchronization between Kanban and Markdown</p>
+                </div>
+            </div>
+        </section>
+        
+        <section id="ai-rules" class="section">
+            <h2>AI Development Rules</h2>
+            
+            <div class="alert alert-info">
+                <strong>For AI Assistants:</strong> This extension includes comprehensive rules for AI assistants to properly create and manage tasks. These rules ensure compatibility and maintain consistency across projects.
+            </div>
+            
+            <h3>Rules Documentation</h3>
+            <p>The project includes detailed rules in the <code>rules/</code> directory:</p>
+            
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h4>.cursorrules</h4>
+                    <p>Rules for Cursor IDE - copy to User Rules</p>
+                    <code><a href="https://github.com/alotth/markdown-kanban-roadmap/blob/main/rules/.cursorrules" target="_blank">rules/.cursorrules</a></code>
+                </div>
+                
+                <div class="feature-card">
+                    <h4>AGENTS.md</h4>
+                    <p>Comprehensive rules for any AI assistant working with Markdown Kanban files</p>
+                    <code><a href="https://github.com/alotth/markdown-kanban-roadmap/blob/main/rules/AGENTS.md" target="_blank">rules/AGENTS.md</a></code>
+                </div>
+                
+                <div class="feature-card">
+                    <h4>CLAUDE.md</h4>
+                    <p>Specific rules and quick reference for Claude AI</p>
+                    <code><a href="https://github.com/alotth/markdown-kanban-roadmap/blob/main/rules/CLAUDE.md" target="_blank">rules/CLAUDE.md</a></code>
+                </div>
+            </div>
+            
+            <h3>Key Rules for AI Assistants</h3>
+            
+            <h4>Task Creation</h4>
+            <ul>
+                <li>Always use format <code>### Task Name</code> for task titles</li>
+                <li>Include unique <code>id: T-XXX</code> (find next available ID)</li>
+                <li>Use 2 spaces indentation for all properties</li>
+                <li>Place tasks in correct Kanban sections (Backlog, Doing, Review, Done, Paused)</li>
+                <li>Use date format <code>YYYY-MM-DD</code> for all dates</li>
+            </ul>
+            
+            <h4>Task Properties</h4>
+            <ul>
+                <li><strong>Required:</strong> <code>id</code></li>
+                <li><strong>Optional:</strong> <code>tags</code>, <code>priority</code>, <code>workload</code>, <code>start</code>, <code>due</code>, <code>milestone</code>, <code>detail</code>, <code>defaultExpanded</code></li>
+                <li>Tags must be in array format: <code>[tag1, tag2, tag3]</code></li>
+                <li>Priority values: <code>high</code>, <code>medium</code>, <code>low</code></li>
+                <li>Workload values: <code>Easy</code>, <code>Normal</code>, <code>Hard</code>, <code>Extreme</code></li>
+            </ul>
+            
+            <h4>File Structure</h4>
+            <pre><code class="code-block-title">TASKS.md structure</code><code># Tasks - project-name
+
+## Backlog
+## Doing
+## Review
+## Done
+## Paused
+## Notes</code></pre>
+            
+            <h4>Detail Files</h4>
+            <p>For complex tasks, create separate detail files:</p>
+            <pre><code class="code-block-title">tasks/T-001.md</code><code># T-001
+
+  - steps:
+      - [ ] Step 1
+      - [x] Step 2 (completed)
+      - [ ] Step 3
+    ```md
+    Detailed task description here.
+    Can include multiple lines and formatting.
+    ```</code></pre>
+            
+            <div class="alert alert-success">
+                <strong>Best Practice:</strong> When working with <code>TASKS.md</code> files, always refer to the rules in <code>rules/</code> directory to ensure proper format and compatibility.
+            </div>
+            
+            <h3>Quick Reference</h3>
+            <div class="terminal">
+                <code># Task format<br>### Task Name<br><br>  - id: T-001<br>  - tags: [tag1, tag2]<br>  - priority: high<br>  - workload: Medium<br>  - start: 2026-01-15<br>  - due: 2026-01-30</code>
+            </div>
+        </section>
+        
+        <section id="organization" class="section">
+            <h2>Team Organization Patterns</h2>
+            
+            <p>Choose the organization pattern that best fits your team size and project structure:</p>
+            
+            <h3>Pattern 1: Centralized TASKS.md in Main Branch</h3>
+            <p><strong>Ideal for:</strong> Small to medium teams, projects with few modules</p>
+            
+            <pre><code class="code-block-title">Structure</code><code>project/
+  ├── TASKS.md          # Single file in main branch
+  ├── src/
+  └── tasks/            # Detail files
+      ├── T-001.md
+      └── T-002.md</code></pre>
+            
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h4>Advantages</h4>
+                    <ul style="margin-left: 20px;">
+                        <li>Single centralized view</li>
+                        <li>Easy to track overall progress</li>
+                        <li>Simple to implement</li>
+                        <li>Ideal for smaller projects</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <h4>Disadvantages</h4>
+                    <ul style="margin-left: 20px;">
+                        <li>Frequent merge conflicts</li>
+                        <li>Requires discipline to update</li>
+                        <li>Can become too large</li>
+                        <li>Difficult parallel work</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="alert alert-info">
+                <strong>Workflow:</strong> Everyone works on main, creates feature branches, and updates TASKS.md when needed. Reference task IDs in commits (e.g., "Fixes T-001").
+            </div>
+            
+            <h3>Pattern 2: TASKS.md per Module/Component</h3>
+            <p><strong>Ideal for:</strong> Large projects, large teams, modular architecture</p>
+            
+            <pre><code class="code-block-title">Structure</code><code>project/
+  ├── frontend/
+  │   ├── TASKS.md
+  │   └── tasks/
+  ├── backend/
+  │   ├── TASKS.md
+  │   └── tasks/
+  ├── shared/
+  │   ├── TASKS.md
+  │   └── tasks/
+  └── TASKS.md          # General/cross-cutting tasks</code></pre>
+            
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h4>Advantages</h4>
+                    <ul style="margin-left: 20px;">
+                        <li>Clear organization by context</li>
+                        <li>Fewer merge conflicts</li>
+                        <li>Teams work independently</li>
+                        <li>Scalable for large projects</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <h4>Disadvantages</h4>
+                    <ul style="margin-left: 20px;">
+                        <li>Multiple files to manage</li>
+                        <li>Fragmented project view</li>
+                        <li>Requires coordination</li>
+                        <li>Possible duplicate tasks</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="alert alert-info">
+                <strong>Workflow:</strong> Each team/module maintains its own TASKS.md. Use a root TASKS.md for cross-cutting tasks. IDs can be prefixed (e.g., FE-T-001, BE-T-001).
+            </div>
+            
+            <h3>Pattern 3: Dedicated Branch for Tasks</h3>
+            <p><strong>Ideal for:</strong> Teams wanting to separate planning from code, projects with many developers</p>
+            
+            <pre><code class="code-block-title">Structure</code><code>Branch: main
+  └── project code
+
+Branch: tasks/kanban
+  └── TASKS.md
+  └── tasks/
+      ├── T-001.md
+      └── T-002.md</code></pre>
+            
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h4>Advantages</h4>
+                    <ul style="margin-left: 20px;">
+                        <li>Clear separation of planning and code</li>
+                        <li>Zero conflicts with code</li>
+                        <li>Can have multiple TASKS.md by context</li>
+                        <li>Independent task history</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <h4>Disadvantages</h4>
+                    <ul style="margin-left: 20px;">
+                        <li>More complex workflow</li>
+                        <li>Requires periodic merging</li>
+                        <li>Can become outdated</li>
+                        <li>Less integrated with code</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="alert alert-info">
+                <strong>Workflow:</strong> Maintain a <code>tasks/</code> or <code>kanban/</code> branch for task management. Feature branches reference tasks by ID. Periodically merge the tasks branch into main.
+            </div>
+            
+            <h3>Pattern 4: Hybrid (Recommended)</h3>
+            <p><strong>Ideal for:</strong> Most projects, balance between simplicity and organization</p>
+            
+            <pre><code class="code-block-title">Structure</code><code>project/
+  ├── TASKS.md          # Overview in main
+  ├── tasks/            # Details
+  │   ├── T-001.md
+  │   └── T-002.md
+  └── docs/
+      └── TASKS-PLANNING.md  # Future planning</code></pre>
+            
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h4>Advantages</h4>
+                    <ul style="margin-left: 20px;">
+                        <li>Balance between simplicity and organization</li>
+                        <li>Main TASKS.md for overview</li>
+                        <li>Separate detail files</li>
+                        <li>Flexible and adaptable</li>
+                        <li>Works well with Git Flow</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <h4>Disadvantages</h4>
+                    <ul style="margin-left: 20px;">
+                        <li>Occasional conflicts still possible</li>
+                        <li>Requires team discipline</li>
+                        <li>May need adjustments as it grows</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="alert alert-info">
+                <strong>Workflow:</strong> Main TASKS.md in main branch with overview. Feature branches reference tasks by ID in commits. Use milestones to group related tasks. For future planning, use a separate file (e.g., TASKS-PLANNING.md).
+            </div>
+            
+            <h3>Pattern 5: TASKS.md per Feature/Epic</h3>
+            <p><strong>Ideal for:</strong> Projects with large features, agile methodology with epics</p>
+            
+            <pre><code class="code-block-title">Structure</code><code>project/
+  ├── features/
+  │   ├── auth/
+  │   │   └── TASKS.md
+  │   ├── dashboard/
+  │   │   └── TASKS.md
+  │   └── api/
+  │       └── TASKS.md
+  └── TASKS.md          # General tasks</code></pre>
+            
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h4>Advantages</h4>
+                    <ul style="margin-left: 20px;">
+                        <li>Organization by feature/epic</li>
+                        <li>Easy to track feature progress</li>
+                        <li>Fewer conflicts</li>
+                        <li>Aligns with agile methodology</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <h4>Disadvantages</h4>
+                    <ul style="margin-left: 20px;">
+                        <li>Multiple files</li>
+                        <li>Features may have related tasks</li>
+                        <li>Requires coordination</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="alert alert-info">
+                <strong>Workflow:</strong> Each feature/epic has its own TASKS.md. Use root TASKS.md for general tasks. IDs can include feature prefix (e.g., AUTH-T-001).
+            </div>
+            
+            <h3>Recommendations by Team Size</h3>
+            
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h4>1-3 Developers</h4>
+                    <p><strong>Recommended:</strong> Pattern 1 (Centralized) or Pattern 4 (Hybrid)</p>
+                    <p>Simplicity is more important than complex organization.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <h4>4-8 Developers</h4>
+                    <p><strong>Recommended:</strong> Pattern 4 (Hybrid) or Pattern 2 (Per Module)</p>
+                    <p>Balance between organization and simplicity.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <h4>9+ Developers</h4>
+                    <p><strong>Recommended:</strong> Pattern 2 (Per Module) or Pattern 5 (Per Feature)</p>
+                    <p>Organization and separation of concerns are essential.</p>
+                </div>
+            </div>
+            
+            <div class="alert alert-success">
+                <strong>General Tip:</strong> Start simple (Pattern 1 or 4) and evolve as needed. It's easier to migrate to a more complex pattern than to simplify later.
+            </div>
+        </section>
+        
+        <section id="examples" class="section">
+            <h2>Examples</h2>
+            
+            <h3>Basic Task</h3>
+            <pre><code class="code-block-title">TASKS.md</code><code>### Fix login bug
+
+  - id: T-005
+  - tags: [bug, frontend, authentication]
+  - priority: high
+  - workload: Easy</code></pre>
+            
+            <h3>Task with Dates</h3>
+            <pre><code class="code-block-title">TASKS.md</code><code>### Implement dark mode
+
+  - id: T-012
+  - tags: [ui, frontend, feature]
+  - priority: medium
+  - workload: Normal
+  - start: 2026-01-20
+  - due: 2026-02-05</code></pre>
+            
+            <h3>Task with Detail File</h3>
+            <pre><code class="code-block-title">TASKS.md</code><code>### Build API endpoints
+
+  - id: T-020
+  - tags: [backend, api, rest]
+  - priority: high
+  - workload: Hard
+  - detail: ./tasks/T-020.md</code></pre>
+            
+            <div class="alert alert-info">
+                <strong>Tip:</strong> See the <code>example-tasks/</code> directory in the repository for complete working examples.
+            </div>
+        </section>
+        
+        <footer>
+            <p><a href="https://github.com/alotth/markdown-kanban-roadmap" target="_blank">View on GitHub</a></p>
+            <p style="margin-top: 10px; opacity: 0.8;">Made for developers</p>
+        </footer>
+    </div>
+    
+    <script>
+        async function copyRules() {
+            const rulesContent = document.getElementById('cursorRulesContent');
+            const button = event.target;
+            const text = rulesContent.textContent || rulesContent.innerText;
+            
+            try {
+                // Use modern Clipboard API
+                if (navigator.clipboard && window.isSecureContext) {
+                    await navigator.clipboard.writeText(text);
+                } else {
+                    // Fallback for older browsers
+                    const textArea = document.createElement('textarea');
+                    textArea.value = text;
+                    textArea.style.position = 'fixed';
+                    textArea.style.left = '-999999px';
+                    document.body.appendChild(textArea);
+                    textArea.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(textArea);
+                }
+                
+                // Update button
+                const originalText = button.textContent;
+                button.textContent = 'Copied!';
+                button.classList.add('copied');
+                
+                // Reset after 2 seconds
+                setTimeout(() => {
+                    button.textContent = originalText;
+                    button.classList.remove('copied');
+                }, 2000);
+            } catch (err) {
+                console.error('Failed to copy:', err);
+                alert('Failed to copy. Please select and copy manually.');
+            }
+        }
+    </script>
+</body>
+</html>

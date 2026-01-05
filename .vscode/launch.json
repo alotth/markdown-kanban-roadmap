@@ -10,12 +10,15 @@
 			"type": "extensionHost",
 			"request": "launch",
 			"args": [
-				"--extensionDevelopmentPath=${workspaceFolder}"
+				"--extensionDevelopmentPath=${workspaceFolder}",
+				"${workspaceFolder}/example-tasks"
 			],
 			"outFiles": [
 				"${workspaceFolder}/dist/**/*.js"
 			],
-			"preLaunchTask": "${defaultBuildTask}"
+			"internalConsoleOptions": "openOnSessionStart",
+			"preLaunchTask": "watch",
+			"sourceMaps": true
 		}
 	]
 }

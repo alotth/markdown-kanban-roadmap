@@ -3,6 +3,24 @@
 
 A powerful VS Code extension that transforms Markdown files into interactive Kanban boards, supporting task management, drag-and-drop operations, and rich task attributes.
 
+## 🎯 Philosophy
+
+This extension is designed with **AI-first development** and **large-scale projects** in mind. It provides a structured, machine-readable format that enables AI assistants to effectively manage complex task hierarchies, detailed documentation, and project planning.
+
+**Key Design Principles:**
+- **AI-First Thinking**: Task format and structure optimized for AI assistants to read, create, and maintain
+- **Scalability**: Built to handle large projects with hundreds of tasks and extensive documentation
+- **Separation of Concerns**: Main board (`TASKS.md`) stays clean and focused, while detailed information lives in separate files (`tasks/T-XXX.md`)
+- **Machine-Readable**: Structured format that AI assistants can parse, validate, and manipulate programmatically
+- **Human-Friendly**: Remains readable and editable by humans while being optimized for AI workflows
+
+**Ideal For:**
+- Large-scale software projects with complex task hierarchies
+- AI-assisted development workflows (Cursor, GitHub Copilot, etc.)
+- Teams using AI assistants for task management and project planning
+- Projects requiring detailed documentation and step tracking
+- Sprint planning and milestone management
+
 ## For Cursor Users
 
 If you're using **Cursor IDE**, add the rules to your **User Rules** to enable AI assistants to properly create and manage tasks in the Markdown Kanban format:
@@ -25,6 +43,12 @@ This will ensure AI assistants understand the task format and maintain compatibi
 
 ### Roadmap View
 ![Roadmap](./imgs/image-roadmap.png)
+
+The Roadmap view provides a timeline visualization of your project, perfect for:
+- **Large Project Planning**: Visualize hundreds of tasks across time
+- **Sprint Management**: Track milestones and sprint progress
+- **AI-Assisted Planning**: AI assistants can help plan and adjust timelines
+- **Progress Tracking**: See project progress at a glance with visual progress bars
 
 ### 📋 Basic Features
 - **Markdown Parsing**: Automatically parses task lists from Markdown files.
@@ -49,6 +73,39 @@ Supports a structured task format for better readability and organization:
 - **Array Tags**: Tags support `[tag1, tag2, tag3]` array format.
 - **Milestone Format**: Suggested format `sprint-year-month_number` (e.g., `sprint-26-1_1` for January 2026, sprint 1).
 - **Backward Compatibility**: Fully compatible with the old inline format.
+- **External Detail Files**: For larger projects, tasks can reference external detail files (`detail: ./tasks/T-XXX.md`) to keep the main board clean while maintaining comprehensive documentation.
+
+### 📁 Task Detail Files (Large Projects & AI Development)
+
+For **larger projects** and **AI-assisted workflows**, tasks can reference external detail files to separate high-level overview from detailed documentation:
+
+**Benefits:**
+- **Clean Main Board**: Keep `TASKS.md` focused on task overview and status
+- **Rich Documentation**: Store detailed requirements, steps, and context in separate files
+- **AI-Friendly**: AI assistants can manage detailed task information without cluttering the main board
+- **Better Organization**: Complex tasks with many steps are easier to manage
+- **Scalability**: Handle projects with hundreds of tasks without overwhelming the main file
+
+**Usage:**
+```markdown
+### Implement Authentication System
+  - id: T-001
+  - tags: [backend, security]
+  - priority: high
+  - detail: ./tasks/T-001.md
+```
+
+The detail file (`tasks/T-001.md`) contains:
+- Detailed task description
+- Step-by-step breakdown
+- Requirements and acceptance criteria
+- Technical specifications
+
+This separation is especially valuable when working with AI assistants, as they can:
+- Maintain detailed task documentation without bloating the main board
+- Update steps and progress in dedicated files
+- Provide comprehensive context for complex tasks
+- Scale to large projects with extensive documentation needs
 
 ### Rules for AI Assistants
 
@@ -82,6 +139,34 @@ See the [example-tasks](./example-tasks/) directory for complete working example
   - Main Panel: Full Kanban editing interface.
 - **Modern UI**: Adheres to VS Code design guidelines and supports theme switching.
 - **Responsive Design**: Adapts to different screen sizes.
+
+## 🔮 Future Features
+
+### GitHub Projects Integration
+
+We're planning to add **bidirectional synchronization with GitHub Projects** to enable seamless integration between local task management and GitHub's project management tools.
+
+**Planned Features:**
+- **Sync Tasks to GitHub Projects**: Automatically create and update GitHub Project items from your `TASKS.md` file
+- **Bidirectional Sync**: Changes in GitHub Projects reflect in your local Markdown files
+- **Issue Linking**: Link tasks to GitHub Issues for better traceability
+- **Status Synchronization**: Keep task status in sync between local files and GitHub Projects
+- **Milestone Mapping**: Map local milestones to GitHub Milestones
+- **AI-Assisted Sync**: AI assistants can help manage the sync process and resolve conflicts
+
+**Benefits for Large Projects:**
+- **Team Collaboration**: Share project status with team members through GitHub Projects
+- **CI/CD Integration**: Connect task status with automated workflows
+- **Visibility**: Stakeholders can view project progress in GitHub without needing the extension
+- **Unified Workflow**: Manage tasks locally while maintaining GitHub integration
+
+This feature will be especially valuable for:
+- Teams using GitHub for project management
+- Open source projects with public roadmaps
+- Projects requiring integration with GitHub Actions and workflows
+- Organizations that need both local AI-assisted task management and GitHub visibility
+
+> **Note**: This is a planned feature. Stay tuned for updates!
 
 ## 🧪 Testing Locally
 

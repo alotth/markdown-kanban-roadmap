@@ -64,3 +64,27 @@
 ### Chore
 
 * **chore:** shorten command name to "Kanban"
+
+## [2.0.2] (2025-01-XX)
+
+### Features
+
+* **feature:** Add task detail files support (`tasks/T-XXX.md`) for large projects and AI-assisted development
+* **feature:** Add Roadmap view with timeline visualization
+* **feature:** Add real-time file watching for detail files
+* **feature:** Add progress calculation based on steps or status
+* **feature:** Add milestone grouping in Roadmap view
+* **feature:** Add AI-first development philosophy and documentation
+
+### Documentation
+
+* **docs:** Update README with AI-first development focus
+* **docs:** Add Philosophy section explaining design principles
+* **docs:** Add Future Features section (GitHub Projects integration)
+* **docs:** Add VS Code Marketplace link
+
+## [2.0.3] (2025-01-XX)
+
+### Fixes
+
+* **fix:** Improve extension activation by adding explicit activation events for commands and startup

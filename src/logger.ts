@@ -36,9 +36,16 @@ class Logger {
     this.fileOutput = options.fileOutput !== false; // default true
     this.minLevel = options.minLevel || LogLevel.DEBUG;
 
-    // Ensure log directory exists
+    // Ensure log directory exists; disable file output if we can't create it.
     if (this.fileOutput && !fs.existsSync(this.logDir)) {
-      fs.mkdirSync(this.logDir, { recursive: true });
+      try {
+        fs.mkdirSync(this.logDir, { recursive: true });
+      } catch (error) {
+        this.fileOutput = false;
+        if (this.consoleOutput) {
+          console.error(`Failed to create log directory: ${error}`);
+        }
+      }
     }
   }
 
@@ -127,7 +134,9 @@ function getLogDir(): string {
     // @ts-ignore - vscode module may not be available in standalone mode
     const vscode = require('vscode');
     if (vscode && vscode.extensions) {
-      const extension = vscode.extensions.getExtension('holooooo.markdown-kanban-roadmap');
+      const extension =
+        vscode.extensions.getExtension('alotth.markdown-kanban-roadmap') ||
+        vscode.extensions.getExtension('holooooo.markdown-kanban-roadmap');
       if (extension) {
         return path.join(extension.extensionPath, '.logs');
       }
@@ -159,4 +168,3 @@ export const logger = defaultLogger;
 
 // Export for creating custom loggers
 export { Logger };
-

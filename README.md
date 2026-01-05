@@ -1,4 +1,4 @@
-# Markdown Kanban
+# Markdown Kanban & Roadmap
 
 A powerful VS Code extension that transforms Markdown files into interactive Kanban boards, supporting task management, drag-and-drop operations, and rich task attributes.
 

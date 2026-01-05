@@ -3,7 +3,7 @@
   "displayName": "Markdown Kanban Roadmap",
   "description": "Kanban board for Markdown files",
   "publisher": "alotth",
-  "version": "2.0.0",
+  "version": "2.0.3",
   "engines": {
     "vscode": "^1.74.0"
   },
@@ -23,7 +23,11 @@
   ],
   "icon": "./imgs/logo.png",
   "activationEvents": [
-    "onLanguage:markdown"
+    "onStartupFinished",
+    "onLanguage:markdown",
+    "onCommand:markdown-kanban.openKanban",
+    "onCommand:markdown-kanban.openRoadmap",
+    "onCommand:markdown-kanban.disableFileListener"
   ],
   "main": "./dist/extension.js",
   "repository": {

@@ -3,6 +3,8 @@
 
 A powerful VS Code extension that transforms Markdown files into interactive Kanban boards, supporting task management, drag-and-drop operations, and rich task attributes.
 
+**[📦 Install from VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=alotth.markdown-kanban-roadmap)**
+
 ## 🎯 Philosophy
 
 This extension is designed with **AI-first development** and **large-scale projects** in mind. It provides a structured, machine-readable format that enables AI assistants to effectively manage complex task hierarchies, detailed documentation, and project planning.
@@ -247,8 +249,9 @@ For publishing instructions, see [PUBLISH.md](./PUBLISH.md).
 ## 🚀 Quick Start
 
 ### Installation
-1. Search for "Markdown Kanban" in the VS Code Extension Marketplace.
-2. Click Install.
+1. **[Install from VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=alotth.markdown-kanban-roadmap)**
+   - Or search for "Markdown Kanban" in the VS Code Extension Marketplace
+   - Click Install
 
 ### How to Use
 

@@ -433,7 +433,7 @@ function buildDayTicks (range) {
     while (cursor <= range.end) {
       ticks.push({
         percent: getPosition(cursor, range),
-        label: `${cursor.getDate()} ${formatDayMonth(cursor)}`
+        label: cursor.getDate().toString()
       })
       cursor.setDate(cursor.getDate() + 7)
     }
@@ -444,14 +444,10 @@ function buildDayTicks (range) {
   const cursor = new Date(range.start.getTime())
   cursor.setDate(cursor.getDate() + 1)
   while (cursor <= range.end) {
-    // Formatar dia de forma mais legível: "27 Dez" ou apenas "27" se muito próximo
-    const dayLabel = days > 60 
-      ? cursor.getDate().toString() 
-      : `${cursor.getDate()} ${formatDayMonth(cursor)}`
-    
+    // Mostrar apenas o número do dia para melhor legibilidade
     ticks.push({
       percent: getPosition(cursor, range),
-      label: dayLabel
+      label: cursor.getDate().toString()
     })
     cursor.setDate(cursor.getDate() + 1)
   }

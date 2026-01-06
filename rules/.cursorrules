@@ -13,7 +13,7 @@ The `TASKS.md` file must follow the Kanban format with these required sections:
 - **Review**: Tasks awaiting review
 - **Done**: Completed tasks
 - **Paused**: Temporarily paused tasks
-- **Notas**: General project notes (optional)
+- **Notes**: General project notes (optional)
 
 ## 🏷️ Task Format
 

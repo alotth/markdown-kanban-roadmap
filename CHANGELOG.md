@@ -88,3 +88,9 @@
 ### Fixes
 
 * **fix:** Improve extension activation by adding explicit activation events for commands and startup
+
+## [2.0.4] (2025-01-XX)
+
+### Improvements
+
+* **improvement:** Simplify timeline day labels to show only day numbers (e.g., "5" instead of "5 Jan") for better readability

@@ -1,0 +1,23 @@
+{
+  "owner": "alotth",
+  "repo": "mapctx",
+  "projectId": "PVT_kwHOAcgr-s4BQF05",
+  "statusFieldId": "PVTSSF_lAHOAcgr-s4BQF05zg-T6jU",
+  "startDateFieldId": "PVTF_lAHOAcgr-s4BQF05zg-T90c",
+  "dueDateFieldId": "PVTF_lAHOAcgr-s4BQF05zg-T91w",
+  "completedDateFieldId": "PVTF_lAHOAcgr-s4BQF05zg-T910",
+  "statusMap": {
+    "backlog": "Backlog",
+    "ready-for-do": "Ready for Do",
+    "doing": "Doing",
+    "review": "Review",
+    "done": "Done",
+    "paused": "Paused"
+  },
+  "tasksFile": "./TASKS.md",
+  "bootstrap": {
+    "createMissingDetailFiles": true,
+    "defaultStatusForImportedIssues": "backlog",
+    "requireConfirmFlag": false
+  }
+}

@@ -1,239 +1,180 @@
-# Markdown Kanban & Roadmap - Rules for AI Agents
+# MapCtx Tasks Rules for AI Agents
 
-> **Note for AI Assistants**: These rules are suggested guidelines for AI assistants to understand how to properly create and manage tasks in the Markdown Kanban format. When working with `TASKS.md` files, follow these rules to ensure compatibility with the VS Code Markdown Kanban extension.
+These rules define how agents should create and maintain `TASKS.md` and `tasks/<ID>.md` files in this repository.
 
-This document provides comprehensive rules for AI agents to create and manage tasks in the Markdown Kanban format that works with the VS Code Markdown Kanban extension.
+## TASKS.md structure
 
-## 📋 TASKS.md File Structure
-
-The `TASKS.md` file must follow the Kanban format with these required sections:
-
-- **Backlog**: Tasks that haven't been started yet
-- **Doing**: Tasks currently in progress
-- **Review**: Tasks awaiting review
-- **Done**: Completed tasks
-- **Paused**: Temporarily paused tasks
-- **Notas**: General project notes (optional)
-
-## 🏷️ Task Format
-
-### Basic Structure
-
-Each task must follow this format:
+Use one single list model:
 
 ```markdown
-### Task Name
+# Tasks - <project-name>
+
+## Work Domains
+
+- COMPONENT: short scope description
+
+## Tasks
+
+### [T-001] Task title
 
   - id: T-001
-  - tags: [tag1, tag2, tag3]
-  - priority: high|medium|low
-  - workload: Easy|Normal|Hard|Extreme
-  - milestone: sprint-26-1_1
-  - start: YYYY-MM-DD
-  - due: YYYY-MM-DD
-  - updated: YYYY-MM-DD
-  - completed: YYYY-MM-DD
+  - status: backlog
+  - type: task
+  - parent: null
+  - subIssueProgress: null
+  - priority: medium
+  - workload: Normal
+  - tags: []
+  - domains: []
+  - dependsOn: []
+  - start: null
+  - due: null
+  - completed: null
+  - externalId: null
+  - updated: 2026-03-06
   - detail: ./tasks/T-001.md
-  - defaultExpanded: true|false
+
+## Notes
+
+- Optional project notes
 ```
 
-### Task Properties
+Do not use section-based columns like `## Backlog`, `## Doing`, `## Review`, `## Done`, `## Paused`.
+Status is always represented by `status:` in each task.
 
-#### Required
-- **`id`**: Unique task identifier (format: `T-XXX` where XXX is a sequential number)
-  - Example: `T-001`, `T-002`, `T-010`
+## Required task fields
 
-#### Optional
-- **`tags`**: Array of tags for categorization
-  - Format: `[tag1, tag2, tag3]`
-  - Example: `[backend, frontend, ui, components]`
-  - Use descriptive and consistent tags
+Every task in `## Tasks` must include these keys in this exact order:
 
-- **`priority`**: Priority level
-  - Values: `high`, `medium`, `low`
-  - Kanban display: 🔴 High, 🟡 Medium, 🟢 Low
+1. `id`
+2. `status`
+3. `type`
+4. `parent`
+5. `subIssueProgress`
+6. `priority`
+7. `workload`
+8. `tags`
+9. `domains`
+10. `dependsOn`
+11. `start`
+12. `due`
+13. `completed`
+14. `externalId`
+15. `updated`
+16. `detail`
 
-- **`workload`**: Estimated effort
-  - Values: `Easy`, `Normal`, `Hard`, `Extreme`
-  - Kanban display: 🟢 Easy, 🟡 Normal, 🔴 Hard, 🔴🔴 Extreme
+Rules:
 
-- **`milestone`**: Milestone or marker the task belongs to
-  - Suggested format: `sprint-year-month_number` (e.g., `sprint-26-1_1` for January 2026, sprint 1)
-  - Can use custom strings (e.g., `reconciliation-nn`, `timezone-utc`)
+- `type` is required and should be one of `epic|feature|task|bug|chore`.
+- `parent` is required as a key. Use parent task ID for subtasks, otherwise `null`.
+- `subIssueProgress` is required as a key. Use for epics when known (for example `3/8`), otherwise `null`.
+- `domains` is the canonical field for parallelization/conflict scope.
+- `touch` is deprecated and accepted only for backward compatibility.
+- Dates must use `YYYY-MM-DD`.
+- Unknown scalar values use `null`.
+- Empty list values should use `[]`.
 
-- **`start`**: Start date
-  - Format: `YYYY-MM-DD`
-  - Example: `2025-12-01`
+## Optional extension fields
 
-- **`due`**: Due date
-  - Format: `YYYY-MM-DD`
-  - Example: `2026-01-15`
+Add only when needed by project workflow or sync setup. If used, append after `detail`:
 
-- **`updated`**: Last update date
-  - Format: `YYYY-MM-DD`
-  - Update whenever the task is modified
+- `iteration`: cycle/sprint identifier
+- `assignees`: list of assignee handles (for GitHub, prefer login names)
+- `externalLinks`: multi-provider external references
+- `milestone`: optional release marker
+- `specMode`: optional depth mode (`lite|standard|strict|null`)
 
-- **`completed`**: Completion date
-  - Format: `YYYY-MM-DD`
-  - Filled when task is moved to "Done"
+Do not use `defaultExpanded`.
 
-- **`detail`**: Path to detail file
-  - Format: `./tasks/T-XXX.md`
-  - Example: `./tasks/T-001.md`
-  - Points to a markdown file with detailed description
+## Status flow
 
-- **`defaultExpanded`**: Whether task should be expanded by default
-  - Values: `true` or `false`
-  - When `true`, task shows all details when loaded
+Default status lifecycle:
 
-### Inline Description
+- `backlog -> ready-for-do`
+- `ready-for-do -> doing`
+- `doing -> review`
+- `review -> done`
+- `doing -> paused`
+- `paused -> doing`
 
-If not using a detail file (`detail`), you can include inline description:
+Custom statuses are allowed when explicitly defined by the project.
 
-```markdown
-### Task Name
+When status changes:
 
-  - id: T-001
-  - tags: [backend]
-  - priority: high
-    ```md
-    Detailed task description here.
-    Can contain multiple lines and markdown formatting.
-    ```
-```
+- Always update `updated`.
+- Set `completed` when entering completion state (`done` by default).
+- Reset `completed: null` when moving out of completion state.
 
-## 📄 Detail Files (tasks/T-XXX.md)
+## Detail file format (`tasks/<ID>.md`)
 
-When using `detail: ./tasks/T-XXX.md`, the file must follow this format:
+Use this metadata-first format:
 
 ```markdown
 # T-001
 
-  - steps:
-      - [ ] Step 1 (not completed)
-      - [x] Step 2 (completed)
-      - [ ] Step 3 (not completed)
-    ```md
-    Detailed task description.
-    Can include context, requirements, examples, etc.
-    ```
+  - role: feature
+  - impact: high
+  - estimatedEffort: 2d
+  - prerequisites: []
+  - blocking: []
+  - filesAffected: []
+  - testsRequired: []
+  - summary: One-line objective.
+  - description: |
+      ## Acceptance
+      - [ ] Define acceptance criteria.
+
+      ## Steps
+      - [ ] Define implementation steps.
+
+      ## Notes
+      Additional context and constraints.
 ```
 
-### Steps Format
+Rules:
 
-- Use `- [ ]` for uncompleted steps
-- Use `- [x]` for completed steps
-- Indentation: minimum 6 spaces before `-`
-- Example:
-  ```markdown
-  - steps:
-      - [ ] Research existing patterns
-      - [x] Create schema design
-      - [ ] Implement endpoints
-  ```
+- File heading must match task ID (`# <ID>`).
+- Keep `description` as the last metadata key.
+- Keep planning product-first: describe user context and expected outcome before technical notes.
+- Put acceptance/steps/notes inside `description: |`.
+- Do not use fenced ```md blocks for task description format.
 
-## ✅ Critical Rules
+## Project management patterns for agents
 
-1. **Indentation**: All task properties must have 2 spaces indentation
-2. **Date Format**: Always use `YYYY-MM-DD` for all dates
-3. **Unique IDs**: Each task must have a unique ID in format `T-XXX`
-4. **Tags**: Use arrays in format `[tag1, tag2]` with commas and spaces
-5. **Descriptions**: Use markdown code blocks with ` ```md ` for descriptions
-6. **Steps**: Only in detail files, not in main TASKS.md
-7. **Sections**: Maintain Kanban sections (Backlog, Doing, Review, Done, Paused)
+Use these planning rules by default:
 
-## 🔄 Status Flow
+1. Start with outcomes, then execution.
+   - Create epics for major outcomes.
+   - Create feature/task/bug/chore items for execution.
+   - Add subtasks only when decomposition improves delivery clarity.
 
-- **Backlog** → **Doing**: When work starts
-- **Doing** → **Review**: When awaiting review
-- **Review** → **Done**: When approved/completed
-- **Doing** → **Paused**: When temporarily paused
-- **Paused** → **Doing**: When resumed
+2. Keep task size delivery-friendly.
+   - Prefer tasks that can be completed in a few days.
+   - Split oversized tasks before moving them to `doing`.
 
-## 📝 Complete Examples
+3. Keep WIP low.
+   - Avoid many concurrent `doing` tasks.
+   - Finish in-progress work before opening new streams.
 
-### Simple Task (no detail file)
+4. Make dependencies explicit and minimal.
+   - Use `dependsOn` only for real blocking relationships.
+   - Avoid dependency chains that are longer than needed.
 
-```markdown
-### Implement user authentication
+5. Keep definitions of done testable.
+   - Use clear acceptance checklists in detail files.
+   - Keep `testsRequired` current with real validation commands.
 
-  - id: T-010
-  - tags: [authentication, security, backend, frontend]
-  - priority: high
-  - workload: Hard
-  - milestone: sprint-26-1_2
-  - start: 2026-01-15
-  - due: 2026-02-15
-```
+6. Preserve low-conflict edits.
+   - Prefer editing only the target task block.
+   - During status transitions, prefer changing `status`, `updated`, and `completed` only.
 
-### Task with Inline Description
+## Agent execution checklist
 
-```markdown
-### Create analytics dashboard
+When creating or editing tasks:
 
-  - id: T-011
-  - tags: [frontend, dashboard, analytics, visualization]
-  - priority: medium
-  - milestone: sprint-26-1_2
-  - start: 2026-01-15
-  - due: 2026-02-10
-    ```md
-    Create an analytics visualization with charts and metrics.
-    Include filters by date and category.
-    ```
-```
-
-### Task with Detail File
-
-```markdown
-### Implement n:n reconciliation between multiple sources
-
-  - id: T-001
-  - tags: [reconciliation, multiple-sources, n-to-n, backend, database]
-  - priority: high
-  - workload: Hard
-  - milestone: sprint-26-1_1
-  - start: 2026-01-01
-  - due: 2026-01-26
-  - detail: ./tasks/T-001.md
-  - defaultExpanded: false
-```
-
-## ⚠️ Common Mistakes to Avoid
-
-1. ❌ Don't use incorrect indentation (must be 2 spaces for properties)
-2. ❌ Don't mix date formats (always `YYYY-MM-DD`)
-3. ❌ Don't forget to update `updated` when modifying tasks
-4. ❌ Don't put steps directly in TASKS.md (only in detail files)
-5. ❌ Don't use duplicate IDs
-6. ❌ Don't forget to move tasks between sections when status changes
-
-## 🎯 Best Practices
-
-1. ✅ Use sequential IDs (`T-001`, `T-002`, etc.)
-2. ✅ Keep tags consistent and descriptive
-3. ✅ Update `updated` whenever you modify a task
-4. ✅ Use `detail` for complex tasks with many steps
-5. ✅ Set `defaultExpanded: true` for important tasks
-6. ✅ Use milestones to group related tasks
-7. ✅ Keep Kanban sections organized
-
-## 🤖 AI Agent Guidelines
-
-When creating or modifying tasks as an AI agent:
-
-1. **Always check existing tasks** before creating new ones to avoid duplicates
-2. **Use appropriate IDs** - find the highest existing ID and increment
-3. **Update `updated` field** whenever you modify a task
-4. **Move tasks between sections** when their status changes
-5. **Create detail files** for complex tasks that need step tracking
-6. **Maintain consistent tag naming** - check existing tags first
-7. **Set realistic dates** - use `start` and `due` appropriately
-8. **Use milestones** to group related work
-
-## 📚 References
-
-- See `example-tasks/TASKS.md` for complete examples
-- See `example-tasks/tasks/` for detail file examples
-- See `example-tasks/README.md` for detailed documentation
-
+1. Scan existing IDs and use the next sequential `T-XXX`.
+2. Keep required field order exact.
+3. Keep task ordering stable; append new tasks at end of `## Tasks`.
+4. Update `updated` for every touched task.
+5. Validate no duplicate IDs.
+6. Ensure every referenced `detail` file exists (or set `detail: null`).

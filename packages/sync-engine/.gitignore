@@ -1,0 +1,7 @@
+node_modules/
+dist/
+.DS_Store
+.mapcs/
+.tasks-sync/
+*.log
+.env

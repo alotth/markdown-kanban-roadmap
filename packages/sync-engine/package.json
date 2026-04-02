@@ -1,0 +1,60 @@
+{
+  "name": "@mapctx/sync-engine",
+  "version": "0.0.4",
+  "description": "Sync TASKS.md with GitHub Issues and Projects v2",
+  "type": "commonjs",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "require": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "bin": {
+    "mapcs": "./dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "npm run build && node --test dist/**/*.test.js",
+    "clean": "rm -rf dist",
+    "pack:check": "npm pack --dry-run",
+    "prepack": "npm run clean && npm run build",
+    "dev:status": "npm run build && node dist/cli.js status --config mapcs.dev.json",
+    "dev:pull": "npm run build && node dist/cli.js pull --dry-run --config mapcs.dev.json",
+    "dev:push": "npm run build && node dist/cli.js push --dry-run --config mapcs.dev.json"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alotth/mapctx.git"
+  },
+  "bugs": {
+    "url": "https://github.com/alotth/mapctx/issues"
+  },
+  "homepage": "https://github.com/alotth/mapctx/tree/main/packages/sync-engine#readme",
+  "engines": {
+    "node": ">=18.18"
+  },
+  "keywords": [
+    "tasks",
+    "sync",
+    "github",
+    "kanban",
+    "markdown"
+  ],
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@types/node": "^24.5.2",
+    "typescript": "^5.9.2"
+  }
+}

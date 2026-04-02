@@ -1,0 +1,48 @@
+{
+  "owner": "your-org-or-user",
+  "repo": "your-repo",
+  "projectId": "PVT_kwDOExample",
+  "statusFieldId": "PVTSSF_lADOExample",
+  "startDateFieldId": "PVTF_lADOExampleStart",
+  "dueDateFieldId": "PVTF_lADOExampleDue",
+  "completedDateFieldId": "PVTF_lADOExampleCompleted",
+  "allowedStatuses": [
+    "backlog",
+    "ready-for-do",
+    "doing",
+    "review",
+    "done",
+    "paused"
+  ],
+  "completionStatuses": [
+    "done"
+  ],
+  "statusMap": {
+    "backlog": "Backlog",
+    "ready-for-do": "Ready for Do",
+    "doing": "In Progress",
+    "review": "In Review",
+    "done": "Done",
+    "paused": "Blocked"
+  },
+  "tasksFile": "./TASKS.md",
+  "bootstrap": {
+    "createMissingDetailFiles": true,
+    "defaultStatusForImportedIssues": "backlog",
+    "requireConfirmFlag": true
+  },
+  "idGeneration": {
+    "preferredPrefix": "T"
+  },
+  "remoteWinsFields": [
+    "status",
+    "tags",
+    "priority",
+    "workload",
+    "milestone"
+  ],
+  "localWinsFields": [
+    "detail",
+    "defaultExpanded"
+  ]
+}

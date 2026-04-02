@@ -1,0 +1,24 @@
+{
+  "issueRestExample": {
+    "number": 203,
+    "title": "Build conflict and parallelization analyzer",
+    "state": "open",
+    "labels": [
+      { "name": "priority:medium" },
+      { "name": "workload:hard" },
+      { "name": "tag:parser" }
+    ],
+    "milestone": { "title": "v2-intelligence" },
+    "body": "Task details and acceptance criteria"
+  },
+  "projectV2GraphqlExample": {
+    "itemId": "PVTI_xxx",
+    "content": { "number": 203 },
+    "status": "In Review"
+  },
+  "externalIdExamples": [
+    "github:issue:203",
+    "jira:issue:PLAT-442",
+    null
+  ]
+}
